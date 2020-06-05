@@ -1,0 +1,1172 @@
+{
+    "swagger": "2.0",
+    "host": "127.0.0.1:8000",
+    "basePath": "/resource_management/",
+    "info": {
+        "version": "1.0.0",
+        "title": "Simple API",
+        "description": "A simple API to learn how to write OpenAPI Specification"
+    },
+    "schemes": [
+        "https",
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "securityDefinitions": {
+        "oauth": {
+            "tokenUrl": "http://auth.ibtspl.com/oauth2/",
+            "flow": "password",
+            "scopes": {
+                "read": "read users",
+                "write": "create users",
+                "update": "update users",
+                "delete": "delete users",
+                "superuser": "super user permission"
+            },
+            "type": "oauth2"
+        }
+    },
+
+    "definitions": {
+
+        "User": {
+            "type": "object",
+            "properties": {
+                "user_id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "job_role": {
+                    "type": "string"
+                },
+                "department": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "profile_pic": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "user_id",
+                "username",
+                "email",
+                "job_role",
+                "department",
+                "gender",
+                "profile_pic"
+            ]
+        },
+
+        "Item": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "link": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "title",
+                "description",
+                "link"
+            ]
+        },
+
+        "Items": {
+            "allOf": [{
+                    "$ref": "#/definitions/Item"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "item_id": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "resource_name": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "item_id",
+                        "resource_name"
+                    ]
+                }
+            ]
+        },
+
+        "Resource": {
+            "type": "object",
+            "properties": {
+                "resource_name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "link": {
+                    "type": "string"
+                },
+                "thumbnail": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "resource_name",
+                "description",
+                "link",
+                "thumbnail"
+            ]
+        },
+
+        "Resources": {
+            "allOf": [{
+                    "$ref": "#/definitions/Resource"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "resource_id": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    "required": [
+                        "resource_id"
+                    ]
+                }
+            ]
+        },
+
+        "Request": {
+            "type": "object",
+            "properties": {
+                "request_id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "profile_pic": {
+                    "type": "string"
+                },
+                "resource_name": {
+                    "type": "string"
+                },
+                "item_name": {
+                    "type": "string"
+                },
+                "access_level": {
+                    "type": "string",
+                    "enum": [
+                        "READ",
+                        "WRITE",
+                        "ADMIN",
+                        "COMMENT-ONLY"
+                    ]
+                },
+                "due_date_time": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            },
+            "required": [
+                "request_id",
+                "username",
+                "resource_name",
+                "item_name",
+                "access_level",
+                "due_date_time"
+            ]
+        }
+
+    },
+
+    "parameters": {
+
+        "UserSignupParameter": {
+            "name": "user_signup",
+            "in": "body",
+            "required": true,
+            "description": "create user",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "username",
+                    "password"
+                ]
+            }
+        },
+
+        "UserLoginParameter": {
+            "name": "user_login",
+            "in": "body",
+            "required": true,
+            "description": "user login",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "username",
+                    "password"
+                ]
+            }
+        },
+
+        "UserProfileUpdateParameter": {
+            "name": "user_profile_update",
+            "in": "body",
+            "required": true,
+            "description": "user profile",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "job_role": {
+                        "type": "string"
+                    },
+                    "department": {
+                        "type": "string"
+                    },
+                    "gender": {
+                        "type": "string"
+                    },
+                    "profile_pic": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "username",
+                    "email",
+                    "job_role",
+                    "department",
+                    "gender",
+                    "profile_pic"
+                ]
+            }
+        },
+
+        "ResourceCreateParameter": {
+            "name": "resource_create",
+            "in": "body",
+            "required": true,
+            "description": "Resource create",
+            "schema": {
+                "$ref": "#/definitions/Resource"
+            }
+        },
+
+        "ResourceUpdateParameter": {
+            "name": "resource_update",
+            "in": "body",
+            "required": true,
+            "description": "Resource Update",
+            "schema": {
+                "$ref": "#/definitions/Resource"
+            }
+        },
+
+        "ResourceIdParameter": {
+            "name": "resource_id",
+            "in": "path",
+            "required": true,
+            "description": "The resource's id",
+            "type": "integer",
+            "format": "int64"
+        },
+
+        "ItemCreateParameter": {
+            "name": "item_create",
+            "in": "body",
+            "required": true,
+            "description": "Item Create",
+            "schema": {
+                "$ref": "#/definitions/Item"
+            }
+        },
+
+        "ItemIdParameter": {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "description": "The item's id",
+            "type": "integer",
+            "format": "int64"
+        },
+
+        "UserIdParameter": {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "The User's item",
+            "type": "integer",
+            "format": "int64"
+        },
+
+        "ItemUpdateParameter": {
+            "name": "item_create",
+            "in": "body",
+            "required": true,
+            "description": "Item Update",
+            "schema": {
+                "$ref": "#/definitions/Item"
+            }
+        },
+
+        "ItemDeleteParameter": {
+            "name": "item_delete",
+            "in": "body",
+            "required": true,
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "item_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                }
+            }
+        },
+
+        "OffsetParameter": {
+            "name": "offset",
+            "in": "query",
+            "description": "Some description for offset",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+        },
+
+        "LimitParameter": {
+            "name": "limit",
+            "in": "query",
+            "description": "Some description for limit",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+        },
+
+        "UpdatePasswordParameter": {
+            "name": "update_password",
+            "in": "body",
+            "required": true,
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "password": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+
+    },
+
+
+    "responses": {
+
+        "UserSignupResponse": {
+            "description": "successfully created",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "access_token": {
+                        "type": "string"
+                    },
+                    "is_admin": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "access_token",
+                    "is_admin"
+                ]
+            }
+        },
+
+        "UsernameAlreadyExistsResponse": {
+            "description": "user name already existed"
+        },
+
+        "UserLoginResponse": {
+            "description": "user login successfully",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "access_token": {
+                        "type": "string"
+                    },
+                    "is_admin": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "access_token",
+                    "is_admin"
+                ]
+            }
+        },
+
+        "UsernameDoesnotExistResponse": {
+            "description": "Username Doesnot Exists"
+        },
+
+        "InvalidPasswordResponse": {
+            "description": "Invalid Password"
+        },
+
+        "InvalidUserResponse": {
+            "description": "Invalid User"
+        },
+
+        "UserProfileUpdateResponse": {
+            "description": "Updated Successfully"
+        },
+
+        "AdminResourcesResponse": {
+            "description": "Success Response",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "total_resources": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "resources": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/Resources"
+                        }
+                    }
+                }
+            }
+        },
+
+        "ResourceCreateResponse": {
+            "description": "successfully created"
+        },
+
+        "UnAuthorizedUserResponse": {
+            "description": "User not an admin"
+        },
+
+        "InvalidResourceIdResponse": {
+            "description": "Invalid Resource"
+        },
+
+        "ResourceDetailsResponse": {
+            "description": "success response",
+            "schema": {
+                "$ref": "#/definitions/Resource"
+            }
+        },
+
+        "ResourceUpdateResponse": {
+            "description": "successfully updated"
+        },
+
+        "ItemCreateResponse": {
+            "description": "successfully item created"
+        },
+
+        "InvalidItemIdResponse": {
+            "description": "Invalid Item"
+        },
+
+        "ItemDetailsResponse": {
+            "description": "success response",
+            "schema": {
+                "$ref": "#/definitions/Items"
+            }
+        },
+
+        "ItemUpdateResponse": {
+            "description": "successfully updated"
+        },
+
+        "GetResourceItemsResponse": {
+            "description": "Success Response",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "total_items": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/Items"
+                        }
+                    }
+                }
+            }
+        },
+
+        "ResourceDeleteResponse": {
+            "description": "Successfully deleted"
+        },
+
+        "ItemDeleteResponse": {
+            "description": "Successfully deleted"
+        },
+
+        "ItemUsersResponse": {
+            "description": "Success Response",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/User"
+                }
+            }
+        },
+
+        "AdminRequestsResponse": {
+            "description": "Success Response",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "total_requests": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "requests": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/Request"
+                        }
+                    }
+                },
+                "required": [
+                    "total_requests"
+                ]
+            }
+        },
+
+        "UserDetailsResponse": {
+            "description": "Success Response",
+            "schema": {
+                "$ref": "#/definitions/User"
+            }
+        },
+
+        "UpdatePasswordResponse": {
+            "description": "Successfully updated"
+        },
+
+        "GetUsersResponse": {
+            "description": "Success Response",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "total_users": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "users": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                }
+            }
+        },
+
+        "UserNotAdminResponse": {
+            "description": "User not an admin"
+        },
+
+        "UserItemsResponse": {
+            "description": "Success Response",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "total_items": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/Items"
+                        }
+                    }
+                }
+            }
+        }
+
+    },
+
+    "paths": {
+
+        "/user/signup/v1/": {
+            "post": {
+                "operationId": "signup",
+                "summary": "New User Signup",
+                "description": "Create New user",
+                "parameters": [{
+                    "$ref": "#/parameters/UserSignupParameter"
+                }],
+                "responses": {
+                    "201": {
+                        "$ref": "#/responses/UserSignupResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/UsernameAlreadyExistsResponse"
+                    }
+                }
+            }
+        },
+
+        "/user/login/v1/": {
+            "post": {
+                "operationId": "login",
+                "summary": "User Login",
+                "description": "User Login",
+                "parameters": [{
+                    "$ref": "#/parameters/UserLoginParameter"
+                }],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/UserLoginResponse"
+                    },
+                    "404": {
+                        "$ref": "#/responses/UsernameDoesnotExistResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/InvalidPasswordResponse"
+                    }
+                }
+            }
+        },
+
+        "/user/details/v1/": {
+            "get": {
+                "operationId": "get_user_details",
+                "summary": "Get User Details",
+                "description": "Get User's Details",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/UserDetailsResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/InvalidUserResponse"
+                    }
+                }
+            }
+        },
+
+        "/user/profile/update/v1/": {
+            "post": {
+                "operationId": "user_profile_update",
+                "summary": "User Profile Update",
+                "description": "User Profile",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                    "$ref": "#/parameters/UserProfileUpdateParameter"
+                }],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/UserProfileUpdateResponse"
+                    },
+                    "404": {
+                        "$ref": "#/responses/InvalidUserResponse"
+                    }
+                }
+            }
+        },
+
+        "/admin/resources/create/v1/": {
+            "post": {
+                "operationId": "create_resources",
+                "summary": "Create Resource",
+                "description": "Create Resources",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                    "$ref": "#/parameters/ResourceCreateParameter"
+                }],
+                "responses": {
+                    "201": {
+                        "$ref": "#/responses/ResourceCreateResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/UnAuthorizedUserResponse"
+                    }
+                }
+            }
+        },
+
+        "/admin/resources/{resource_id}/details/v1/": {
+            "get": {
+                "operationId": "get_resource_details",
+                "summary": "Get Resource details",
+                "description": "Get Resource",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                    "$ref": "#/parameters/ResourceIdParameter"
+                }],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/ResourceDetailsResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/UnAuthorizedUserResponse"
+                    },
+                    "404": {
+                        "$ref": "#/responses/InvalidResourceIdResponse"
+                    }
+                }
+            }
+        },
+
+        "/admin/resources/{resource_id}/update/v1/": {
+            "post": {
+                "operationId": "update_resource",
+                "summary": "Update Resource",
+                "description": "Update Resources",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                        "$ref": "#/parameters/ResourceIdParameter"
+                    },
+                    {
+                        "$ref": "#/parameters/ResourceUpdateParameter"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/ResourceUpdateResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/UnAuthorizedUserResponse"
+                    },
+                    "404": {
+                        "$ref": "#/responses/InvalidResourceIdResponse"
+                    }
+                }
+            }
+        },
+
+        "/admin/resources/{resource_id}/delete/v1/": {
+            "delete": {
+                "operationId": "delete_resource",
+                "summary": "Delete Resource",
+                "description": "Delete Resource",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                    "$ref": "#/parameters/ResourceIdParameter"
+                }],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/ResourceDeleteResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/UnAuthorizedUserResponse"
+                    },
+                    "404": {
+                        "$ref": "#/responses/InvalidResourceIdResponse"
+                    }
+                }
+            }
+        },
+
+        "/admin/resources/v1/": {
+            "get": {
+                "operationId": "get_admin_resources",
+                "summary": "Admin User Resources",
+                "description": "Get Admin Resources",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                        "$ref": "#/parameters/OffsetParameter"
+                    },
+                    {
+                        "$ref": "#/parameters/LimitParameter"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/AdminResourcesResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/UnAuthorizedUserResponse"
+                    }
+                }
+            }
+        },
+
+        "/resources/{resource_id}/item/create/v1/": {
+            "post": {
+                "operationId": "create_item",
+                "summary": "Create Item",
+                "description": "Create Item in Resource",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                        "$ref": "#/parameters/ResourceIdParameter"
+                    },
+                    {
+                        "$ref": "#/parameters/ItemCreateParameter"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "$ref": "#/responses/ItemCreateResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/UnAuthorizedUserResponse"
+                    },
+                    "404": {
+                        "$ref": "#/responses/InvalidResourceIdResponse"
+                    }
+                }
+            }
+        },
+
+        "/resources/{resource_id}/items/v1/": {
+            "get": {
+                "operationId": "get_resource_items",
+                "summary": "Get Resource Items",
+                "description": "Get Resource Items",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                        "$ref": "#/parameters/ResourceIdParameter"
+                    },
+                    {
+                        "$ref": "#/parameters/OffsetParameter"
+                    },
+                    {
+                        "$ref": "#/parameters/LimitParameter"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/GetResourceItemsResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/UnAuthorizedUserResponse"
+                    },
+                    "404": {
+                        "$ref": "#/responses/InvalidResourceIdResponse"
+                    }
+                }
+            }
+        },
+
+        "/items/{item_id}/details/v1/": {
+            "get": {
+                "operationId": "get_item_details",
+                "summary": "Get Item Details",
+                "description": "Get Item Details",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                    "$ref": "#/parameters/ItemIdParameter"
+                }],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/ItemDetailsResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/UnAuthorizedUserResponse"
+                    },
+                    "404": {
+                        "$ref": "#/responses/InvalidItemIdResponse"
+                    }
+                }
+            }
+        },
+
+        "/items/{item_id}/update/v1/": {
+            "post": {
+                "operationId": "update_item",
+                "summary": "Item Update",
+                "description": "Item Update",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                        "$ref": "#/parameters/ItemIdParameter"
+                    },
+                    {
+                        "$ref": "#/parameters/ItemUpdateParameter"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/ItemUpdateResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/UnAuthorizedUserResponse"
+                    },
+                    "404": {
+                        "$ref": "#/responses/InvalidItemIdResponse"
+                    }
+                }
+            }
+        },
+
+        "/items/delete/v1/": {
+            "delete": {
+                "operationId": "delete_item",
+                "summary": "Item Delete",
+                "description": "Item Delete",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                    "$ref": "#/parameters/ItemDeleteParameter"
+                }],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/ItemDeleteResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/UnAuthorizedUserResponse"
+                    },
+                    "404": {
+                        "$ref": "#/responses/InvalidItemIdResponse"
+                    }
+                }
+            }
+        },
+
+        "/items/{item_id}/users/v1/": {
+            "get": {
+                "operationId": "get_item_users",
+                "summary": "Get Item Users",
+                "description": "Get Users of Items",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                    "$ref": "#/parameters/ItemIdParameter"
+                }],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/ItemUsersResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/UnAuthorizedUserResponse"
+                    },
+                    "404": {
+                        "$ref": "#/responses/InvalidItemIdResponse"
+                    }
+                }
+            }
+        },
+
+        "/user/password/update/v1/": {
+            "post": {
+                "operationId": "update_password",
+                "summary": "Update Password",
+                "description": "Update User's Password",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                    "$ref": "#/parameters/UpdatePasswordParameter"
+                }],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/UpdatePasswordResponse"
+                    },
+                    "404": {
+                        "$ref": "#/responses/InvalidUserResponse"
+                    }
+                }
+            }
+        },
+
+        "/admin/requests/v1/": {
+            "get": {
+                "operationId": "get_admin_requests",
+                "summary": "Get Admin Requests",
+                "description": "Get User's Requests",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                        "$ref": "#/parameters/OffsetParameter"
+                    },
+                    {
+                        "$ref": "#/parameters/LimitParameter"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/AdminRequestsResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/UnAuthorizedUserResponse"
+                    }
+                }
+            }
+        },
+
+
+        "/admin/users/v1/": {
+            "get": {
+                "operationId": "get_users",
+                "summary": "Get Users",
+                "description": "Get Users",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                        "$ref": "#/parameters/OffsetParameter"
+                    },
+                    {
+                        "$ref": "#/parameters/LimitParameter"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/GetUsersResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/UserNotAdminResponse"
+                    }
+                }
+            }
+        },
+
+        "/user/items/v1/": {
+            "get": {
+                "operationId": "get_user_items",
+                "summary": "Get User Items",
+                "description": "Get User Items",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                        "$ref": "#/parameters/OffsetParameter"
+                    },
+                    {
+                        "$ref": "#/parameters/LimitParameter"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/UserItemsResponse"
+                    },
+                    "404": {
+                        "$ref": "#/responses/InvalidUserResponse"
+                    }
+                }
+            }
+        }
+
+    }
+}
