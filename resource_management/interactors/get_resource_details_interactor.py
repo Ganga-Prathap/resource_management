@@ -15,20 +15,12 @@ class GetResourceDetailsInteractor:
         self.resource_storage = resource_storage
         self.presenter = presenter
 
-    def get_resource_details(self, user_id: int, resource_id: int):
-        print("\n","hello","\n\n")
-        is_admin = self.user_storage.is_user_admin_or_not(user_id=user_id)
-        is_not_admin = not is_admin
-        if is_not_admin:
-            self.presenter.unauthorized_user()
-            return
-        is_valid_resource = self.resource_storage.is_valid_resource_id(
-            resource_id=resource_id
-        )
-        is_not_valid_resource = not is_valid_resource
-        if is_not_valid_resource:
-            self.presenter.invalid_resource_id()
-            return
+    def get_resource_details(self, user_id: int,
+                             resource_id: int):
+
+        self.validate_admin(user_id)
+        self.validate_resource(resource_id)
+
         resource_dto = self.resource_storage.get_resource_details(
             resource_id=resource_id
         )
@@ -36,3 +28,19 @@ class GetResourceDetailsInteractor:
             resourcedto=resource_dto
         )
         return response
+
+    def validate_admin(self, user_id: int):
+        is_admin = self.user_storage.is_user_admin_or_not(user_id=user_id)
+        is_not_admin = not is_admin
+        if is_not_admin:
+            self.presenter.unauthorized_user()
+            return
+
+    def validate_resource(self, resource_id: int):
+        is_valid_resource = self.resource_storage.is_valid_resource_id(
+            resource_id=resource_id
+        )
+        is_not_valid_resource = not is_valid_resource
+        if is_not_valid_resource:
+            self.presenter.invalid_resource_id()
+            return

@@ -12,11 +12,8 @@ class GetUserDetailsInteractor:
         self.presenter = presenter
 
     def get_user_details(self, user_id: int):
-        is_user_valid = self.user_storage.is_valid_user(user_id=user_id)
-        is_not_valid_user = not is_user_valid
-        if is_not_valid_user:
-            self.presenter.invalid_user()
-            return
+
+        self.validate_user(user_id)
 
         user_dto = self.user_storage.get_user_details(
             user_id=user_id
@@ -26,3 +23,10 @@ class GetUserDetailsInteractor:
             user_dto=user_dto
         )
         return user_dict
+
+    def validate_user(self, user_id: int):
+        is_user_valid = self.user_storage.is_valid_user(user_id=user_id)
+        is_not_valid_user = not is_user_valid
+        if is_not_valid_user:
+            self.presenter.invalid_user()
+            return

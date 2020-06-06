@@ -7,6 +7,7 @@ from resource_management.interactors.storages.item_storage_interface import \
 from resource_management.interactors.presenters.presenter_interface import \
     PresenterInterface
 
+
 class CreateItemInteractor:
 
     def __init__(self, user_storage: UserStorageInterface,
@@ -21,11 +22,23 @@ class CreateItemInteractor:
     def create_item(self, user_id: int, resource_id: int, title: str,
                     description: str, link: str):
 
+        self.validate_admin(user_id)
+        self.validate_resource(resource_id)
+        self.item_storage.create_item(
+            resource_id=resource_id,
+            title=title,
+            description=description,
+            link=link
+        )
+
+    def validate_admin(self, user_id: int):
         is_admin = self.user_storage.is_user_admin_or_not(user_id=user_id)
         is_not_admin = not is_admin
         if is_not_admin:
             self.presenter.unauthorized_user()
             return
+
+    def validate_resource(self, resource_id: int):
         is_valid_resource = self.resource_storage.is_valid_resource_id(
             resource_id=resource_id
         )
@@ -33,9 +46,3 @@ class CreateItemInteractor:
         if is_not_valid_resource:
             self.presenter.invalid_resource_id()
             return
-        self.item_storage.create_item(
-            resource_id=resource_id,
-            title=title,
-            description=description,
-            link=link
-        )

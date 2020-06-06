@@ -2,7 +2,7 @@
 
 APP_NAME = "resource_management"
 OPERATION_NAME = "delete_item"
-REQUEST_METHOD = "delete"
+REQUEST_METHOD = "post"
 URL_SUFFIX = "items/delete/v1/"
 
 from .test_case_01 import TestCase01DeleteItemAPITestCase

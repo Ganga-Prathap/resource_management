@@ -1,43 +1,54 @@
 from resource_management.interactors.storages.user_storage_interface import \
     UserStorageInterface
-from resource_management.interactors.storages.resource_storage_interface \
-    import ResourceStorageInterface
+from resource_management.interactors.storages.item_storage_interface import \
+    ItemStorageInterface
 from resource_management.interactors.presenters.presenter_interface import \
     PresenterInterface
 
 
-class GetAdminResourcesInteractor:
+class GetItemsInteractor:
 
     def __init__(self, user_storage: UserStorageInterface,
-                 resource_storage: ResourceStorageInterface,
+                 item_storage: ItemStorageInterface,
                  presenter: PresenterInterface):
         self.user_storage = user_storage
-        self.resource_storage = resource_storage
+        self.item_storage = item_storage
         self.presenter = presenter
 
-    def get_admin_resources(self, user_id: int,
-                            offset:int,
-                            limit: int):
+    def get_items(self, admin_id: int,
+                  user_id: int,
+                  offset: int,
+                  limit: int):
 
         self.validate_offset_value(offset)
         self.validate_limit_value(limit)
-        self.validate_admin(user_id)
+        self.validate_admin(admin_id)
+        self.validate_user(user_id)
 
-        resources_count = self.resource_storage.get_total_resources_count()
-        resources_list_dto = self.resource_storage.get_admin_resources(
-            offset=offset, limit=limit
+        items_count = self.item_storage.get_user_items_count(user_id=user_id)
+        items_dto = self.item_storage.get_user_items(
+            user_id=user_id,
+            offset=offset,
+            limit=limit
         )
-        response = self.presenter.get_admin_resources_response(
-            resources_list_dto=resources_list_dto,
-            resources_count=resources_count
+        items_dict = self.presenter.get_user_items_response(
+            items_dto=items_dto,
+            items_count=items_count
         )
-        return response
+        return items_dict
 
-    def validate_admin(self, user_id: int):
-        is_admin = self.user_storage.is_user_admin_or_not(user_id=user_id)
+    def validate_admin(self, admin_id: int):
+        is_admin = self.user_storage.is_user_admin_or_not(user_id=admin_id)
         is_not_admin = not is_admin
         if is_not_admin:
             self.presenter.unauthorized_user()
+            return
+
+    def validate_user(self, user_id: int):
+        is_user_valid = self.user_storage.is_valid_user(user_id=user_id)
+        is_not_valid_user = not is_user_valid
+        if is_not_valid_user:
+            self.presenter.invalid_user()
             return
 
     def validate_offset_value(self, offset: int):

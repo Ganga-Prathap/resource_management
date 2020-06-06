@@ -6,6 +6,7 @@ from resource_management.interactors.storages.item_storage_interface import \
 from resource_management.interactors.presenters.presenter_interface import \
     PresenterInterface
 
+
 class DeleteItemsInteractor:
 
     def __init__(self, user_storage: UserStorageInterface,
@@ -15,13 +16,10 @@ class DeleteItemsInteractor:
         self.item_storage = item_storage
         self.presenter = presenter
 
-    def delete_items(self, user_id: int, item_ids: List[int]):
+    def delete_items(self, user_id: int,
+                     item_ids: List[int]):
 
-        is_admin = self.user_storage.is_user_admin_or_not(user_id=user_id)
-        is_not_admin = not is_admin
-        if is_not_admin:
-            self.presenter.unauthorized_user()
-            return
+        self.validate_admin(user_id)
         for item_id in item_ids:
             is_valid_item = self.item_storage.is_valid_item_id(
                 item_id=item_id
@@ -30,5 +28,11 @@ class DeleteItemsInteractor:
             if is_not_valid_item:
                 self.presenter.invalid_item_id()
                 return
-
         self.item_storage.delete_items(item_ids=item_ids)
+
+    def validate_admin(self, user_id: int):
+        is_admin = self.user_storage.is_user_admin_or_not(user_id=user_id)
+        is_not_admin = not is_admin
+        if is_not_admin:
+            self.presenter.unauthorized_user()
+            return

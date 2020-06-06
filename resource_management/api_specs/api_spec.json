@@ -314,6 +314,15 @@
             "format": "int64"
         },
 
+        "UserIdParameter": {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "user id",
+            "type": "integer",
+            "format": "int64"
+        },
+
         "ItemCreateParameter": {
             "name": "item_create",
             "in": "body",
@@ -329,15 +338,6 @@
             "in": "path",
             "required": true,
             "description": "The item's id",
-            "type": "integer",
-            "format": "int64"
-        },
-
-        "UserIdParameter": {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "description": "The User's item",
             "type": "integer",
             "format": "int64"
         },
@@ -683,7 +683,7 @@
             }
         },
 
-        "/user/details/v1/": {
+        "/user/{user_id}/details/v1/": {
             "get": {
                 "operationId": "get_user_details",
                 "summary": "Get User Details",
@@ -693,6 +693,9 @@
                         "read",
                         "write"
                     ]
+                }],
+                "parameters": [{
+                    "$ref": "#/parameters/UserIdParameter"
                 }],
                 "responses": {
                     "200": {
@@ -1000,7 +1003,7 @@
         },
 
         "/items/delete/v1/": {
-            "delete": {
+            "post": {
                 "operationId": "delete_item",
                 "summary": "Item Delete",
                 "description": "Item Delete",
@@ -1160,6 +1163,41 @@
                 "responses": {
                     "200": {
                         "$ref": "#/responses/UserItemsResponse"
+                    },
+                    "404": {
+                        "$ref": "#/responses/InvalidUserResponse"
+                    }
+                }
+            }
+        },
+
+        "/admin/{user_id}/items/": {
+            "get": {
+                "operationId": "get_items",
+                "summary": "Get Items of User",
+                "description": "Get Items",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                        "$ref": "#/parameters/UserIdParameter"
+                    },
+                    {
+                        "$ref": "#/parameters/OffsetParameter"
+                    },
+                    {
+                        "$ref": "#/parameters/LimitParameter"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/UserItemsResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/UserNotAdminResponse"
                     },
                     "404": {
                         "$ref": "#/responses/InvalidUserResponse"

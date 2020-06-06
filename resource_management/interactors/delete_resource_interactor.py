@@ -15,13 +15,24 @@ class DeleteResourceInteractor:
         self.resource_storage = resource_storage
         self.presenter = presenter
 
-    def delete_resource(self, user_id: int, resource_id: int):
+    def delete_resource(self, user_id: int,
+                        resource_id: int):
 
+        self.validate_admin(user_id)
+        self.validate_resource(resource_id)
+
+        self.resource_storage.delete_resource(
+            resource_id=resource_id
+        )
+
+    def validate_admin(self, user_id: int):
         is_admin = self.user_storage.is_user_admin_or_not(user_id=user_id)
         is_not_admin = not is_admin
         if is_not_admin:
             self.presenter.unauthorized_user()
             return
+
+    def validate_resource(self, resource_id: int):
         is_valid_resource = self.resource_storage.is_valid_resource_id(
             resource_id=resource_id
         )
@@ -29,7 +40,3 @@ class DeleteResourceInteractor:
         if is_not_valid_resource:
             self.presenter.invalid_resource_id()
             return
-
-        self.resource_storage.delete_resource(
-            resource_id=resource_id
-        )

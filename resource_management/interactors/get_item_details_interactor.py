@@ -15,20 +15,11 @@ class GetItemDetailsInteractor:
         self.item_storage = item_storage
         self.presenter = presenter
 
-    def get_item_details(self, user_id: int, item_id: int):
+    def get_item_details(self, user_id: int,
+                         item_id: int):
 
-        is_admin = self.user_storage.is_user_admin_or_not(user_id=user_id)
-        is_not_admin = not is_admin
-        if is_not_admin:
-            self.presenter.unauthorized_user()
-            return
-        is_valid_item = self.item_storage.is_valid_item_id(
-            item_id=item_id
-        )
-        is_not_valid_item = not is_valid_item
-        if is_not_valid_item:
-            self.presenter.invalid_item_id()
-            return
+        self.validate_admin(user_id)
+        self.validate_item(item_id)
 
         item_dto = self.item_storage.get_item_details(
             item_id=item_id
@@ -38,3 +29,19 @@ class GetItemDetailsInteractor:
             item_dto=item_dto
         )
         return response
+
+    def validate_admin(self, user_id: int):
+        is_admin = self.user_storage.is_user_admin_or_not(user_id=user_id)
+        is_not_admin = not is_admin
+        if is_not_admin:
+            self.presenter.unauthorized_user()
+            return
+
+    def validate_item(self, item_id: int):
+        is_valid_item = self.item_storage.is_valid_item_id(
+            item_id=item_id
+        )
+        is_not_valid_item = not is_valid_item
+        if is_not_valid_item:
+            self.presenter.invalid_item_id()
+            return

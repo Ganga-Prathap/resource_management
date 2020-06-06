@@ -15,11 +15,10 @@ from .validator_class import ValidatorClass
 
 @validate_decorator(validator_class=ValidatorClass)
 def api_wrapper(*args, **kwargs):
-    print("\n\n",123,"\n\n")
+
     user = kwargs['user']
     user_id = user.id
     resource_id = kwargs['resource_id']
-    print("\n\nresource_id: ", resource_id, "\n\n")
 
     user_storage = UserStorageImplementation()
     resource_storage = ResourceStorageImplementation()

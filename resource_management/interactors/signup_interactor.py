@@ -15,20 +15,14 @@ class SignupInteractor:
         self.presenter = presenter
 
     def signup(self, username: str, password: str):
-        is_username_exists = self.user_storage.validate_username(
-            username=username)
-        if is_username_exists:
-            response = self.presenter.username_already_exists()
-            return response
+        self.check_username_validity(username)
 
         user_id = self.user_storage.signup_new_user(
             username=username,
             password=password
         )
-
         from common.oauth_user_auth_tokens_service import \
             OAuthUserAuthTokensService
-
         token_service = OAuthUserAuthTokensService(
             oauth2_storage=self.oauth2_storage
         )
@@ -41,3 +35,10 @@ class SignupInteractor:
             is_admin=is_admin
         )
         return response
+
+    def check_username_validity(self, username: str):
+        is_username_exists = self.user_storage.validate_username(
+            username=username)
+        if is_username_exists:
+            response = self.presenter.username_already_exists()
+            return response
