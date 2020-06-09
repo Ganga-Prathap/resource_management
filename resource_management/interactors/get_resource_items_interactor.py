@@ -75,6 +75,7 @@ class GetResourceItemsInteractor:
         if offset < 0:
             return False
         return True
+
     def _check_limit_value(self, limit):
         if limit < 0:
             return False
