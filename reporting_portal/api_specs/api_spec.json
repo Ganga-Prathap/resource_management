@@ -1,212 +1,546 @@
 {
-        "swagger": "2.0",
-        "host": "127.0.0.1:8000",
-        "basePath": "/api/reporting_portal/",
-        "info": {
-            "version": "1.0.0",
-            "title": "Simple API",
-            "description": "A simple API to learn how to write OpenAPI Specification"
-        },
-        "schemes": [
-            "http"
-        ],
-        "consumes": [
-            "application/json"
-        ],
-        "produces": [
-            "application/json"
-        ],
-        "securityDefinitions": {
-            "oauth": {
-                "tokenUrl": "http://auth.ibtspl.com/oauth2/",
-                "flow": "password",
-                "scopes": {
-                    "read": "read users",
-                    "write": "create users",
-                    "update": "update users",
-                    "delete": "delete users"
+    "swagger": "2.0",
+    "host": "localhost:8000",
+    "basePath": "/fb_post/",
+    "info": {
+        "version": "1.0.0",
+        "title": "Simple API",
+        "description": "A simple API to learn how to write OpenAPI Specification"
+    },
+    "schemes": [
+        "https",
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "securityDefinitions": {
+        "oauth": {
+            "tokenUrl": "http://auth.ibtspl.com/oauth2/",
+            "flow": "password",
+            "scopes": {
+                "read": "read users",
+                "write": "create users",
+                "update": "update users",
+                "delete": "delete users",
+                "superuser": "super user permission"
+            },
+            "type": "oauth2"
+        }
+    },
+
+    "definitions": {
+
+        "Category": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "integer",
+                    "format": "int64"
                 },
-                "type": "oauth2"
-            }
+                "category_name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "category_id",
+                "category_name"
+            ]
         },
-        "security": [],
-        "definitions": {
-            "TodoId": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer"
+
+        "SubCategory": {
+            "type": "object",
+            "properties": {
+                "sub_category_id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "sub_category_name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "sub_category_id",
+                "sub_category_name"
+            ]
+        },
+
+        "CategoryInfo": {
+            "allOf": [{
+                    "$ref": "#/definitions/Category"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "sub_categories": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/SubCategory"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+
+        "Observation": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "category_id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "sub_category_id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "severity": {
+                    "type": "string",
+                    "enum": [
+                        "HIGH",
+                        "LOW",
+                        "MEDIUM"
+                    ]
+                },
+                "description": {
+                    "type": "string"
+                },
+                "attachments": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
                     }
                 }
             },
-            "BasicTodo": {
+            "required": [
+                "title",
+                "severity",
+                "description"
+            ]
+        },
+
+        "User": {
+            "type": "object",
+            "properties": {
+                "user_id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "user_name": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "profile_pic": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "user_id",
+                "user_name",
+                "phone_number",
+                "profile_pic"
+            ]
+        },
+
+        "ListOfObservations": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "observed_at": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "severity": {
+                    "type": "string",
+                    "enum": [
+                        "HIGH",
+                        "LOW",
+                        "MEDIUM"
+                    ]
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "ACTION_IN_PROGRESS",
+                        "CLOSED",
+                        "RESOLVED"
+                    ]
+                },
+                "due_date_time": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            },
+            "required": [
+                "title",
+                "observed_at",
+                "severity",
+                "status",
+                "due_date_time"
+            ]
+        },
+
+        "UserObservations": {
+            "allOf": [{
+                    "$ref": "#/definitions/ListOfObservations"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "assigned_to": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "required": [
+                        "assigned_to"
+                    ]
+                }
+            ]
+        },
+
+        "RpAssignedObservations": {
+            "allOf": [{
+                    "$ref": "#/definitions/ListOfObservations"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "reported_by": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "required": [
+                        "reported_by"
+                    ]
+                }
+            ]
+        },
+
+        "AdminObservations": {
+            "allOf": [{
+                    "$ref": "#/definitions/ListOfObservations"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "reported_by": {
+                            "$ref": "#/definitions/User"
+                        },
+                        "assigned_to": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "required": [
+                        "assigned_to"
+                    ]
+                }
+            ]
+        },
+
+        "RequestBody": {
+            "type": "object",
+            "properties": {
+                "sorted_by": {
+                    "type": "string",
+                    "enum": [
+                        "REPORTED_ON",
+                        "DUE_DATE"
+                    ]
+                },
+                "order": {
+                    "type": "string",
+                    "enum": [
+                        "ASC",
+                        "DESC"
+                    ]
+                },
+                "filter": {
+                    "type": "string",
+                    "enum": [
+                        "ALL",
+                        "ACTION_IN_PROGRESS",
+                        "RESOLVED",
+                        "CLOSED",
+                        "REPORTED",
+                        "ACKNOWLEDGED_BY_RP"
+                    ]
+                }
+            }
+        }
+
+    },
+
+    "parameters": {
+
+        "CreateObservationParameter": {
+            "name": "observation",
+            "in": "body",
+            "required": true,
+            "description": "create observation",
+            "schema": {
+                "$ref": "#/definitions/Observation"
+            }
+        },
+
+        "OffsetParameter": {
+            "name": "offset",
+            "in": "query",
+            "description": "Some description for offset",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+        },
+
+        "LimitParameter": {
+            "name": "limit",
+            "in": "query",
+            "description": "Some description for limit",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+        },
+
+        "GetUserObservationsParameter": {
+            "name": "get_user_observations_body",
+            "in": "body",
+            "required": true,
+            "description": "get_observations",
+            "schema": {
+                "$ref": "#/definitions/RequestBody"
+            }
+        },
+
+        "GetAssignedObservationsParameter": {
+            "name": "get_assigned_observations_body",
+            "in": "body",
+            "required": true,
+            "description": "get_assigned_observations",
+            "schema": {
+                "$ref": "#/definitions/RequestBody"
+            }
+        },
+
+        "GetAdminObservationsParameter": {
+            "name": "get_admin_total_observations_body",
+            "in": "body",
+            "required": true,
+            "description": "get_total_observations",
+            "schema": {
+                "$ref": "#/definitions/RequestBody"
+            }
+        }
+
+    },
+
+    "responses": {
+
+        "InvalidDetailsResponse": {
+            "description": "Invalid Details",
+            "schema": {
+                "type": "string",
+                "enum": [
+                    "Invalid Category type",
+                    "Invalid Subcategory type"
+                ]
+            }
+        },
+
+        "CreateObservationResponse": {
+            "description": "Success Response"
+        },
+
+        "CategoryDetailsResponse": {
+            "description": "Success Response",
+            "schema": {
                 "type": "object",
                 "properties": {
-                    "description": {
-                        "type": "string"
-                    },
-                    "is_completed": {
-                        "type": "boolean"
-                    },
-                    "remind_at": {
-                        "type": "string"
+                    "categories": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/CategoryInfo"
+                        }
                     }
                 },
                 "required": [
-                    "description"
+                    "categories"
                 ]
-            },
-            "Todo": {
-                "allOf": [
-                    {
-                        "$ref": "#/definitions/BasicTodo"
+            }
+        },
+
+        "GetUserObservationsResponse": {
+            "description": "Success Response",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/UserObservations"
+                }
+            }
+        },
+
+        "GetAssignedObservationsResponse": {
+            "description": "Success Response",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/RpAssignedObservations"
+                }
+            }
+        },
+
+        "GetAdminObservationsResponse": {
+            "description": "Success Response",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/AdminObservations"
+                }
+            }
+        }
+
+    },
+
+    "paths": {
+
+        "/observations/create/v1/": {
+            "post": {
+                "operationId": "create_observation",
+                "summary": "Create Observation",
+                "description": "Observation Create",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                    "$ref": "#/parameters/CreateObservationParameter"
+                }],
+                "responses": {
+                    "404": {
+                        "$ref": "#/responses/InvalidDetailsResponse"
+                    },
+                    "200": {
+                        "$ref": "#/responses/CreateObservationResponse"
+                    }
+                }
+            }
+        },
+
+        "/categories/v1/": {
+            "get": {
+                "operationId": "get_categories",
+                "summary": "Get Category Details",
+                "description": "Category Details",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/CategoryDetailsResponse"
+                    }
+                }
+            }
+        },
+
+        "/observations/v1/": {
+            "post": {
+                "operationId": "get_observations",
+                "summary": "Get Observations",
+                "description": "Get Observations",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                        "$ref": "#/parameters/OffsetParameter"
                     },
                     {
-                        "$ref": "#/definitions/TodoId"
-                    }
-                ]
-            }
-        },
-        "parameters": {
-            "TodoId": {
-                "description": "todo id",
-                "in": "path",
-                "name": "id",
-                "required": true,
-                "type": "integer"
-            },
-            "BasicTodo": {
-                "description": "Todo Parameter",
-                "in": "body",
-                "name": "todo",
-                "required": true,
-                "schema": {
-                    "$ref": "#/definitions/BasicTodo"
-                }
-            }
-        },
-        "responses": {
-            "SuccessResponse": {
-                "description": "success response"
-            }
-        },
-        "paths": {
-            "/todos/": {
-                "get": {
-                    "summary": "Get all todos",
-                    "description": "Returns a list containing all todos.",
-                    "operationId": "get_todos",
-                    "security": [
-                        {
-                            "oauth": [
-                                "read"
-                            ]
-                        }
-                    ],
-                    "responses": {
-                        "200": {
-                            "description": "A list of todos",
-                            "schema": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/Todo"
-                                }
-                            }
-                        }
-                    }
-                },
-                "post": {
-                    "summary": "create a todo",
-                    "description": "Create a todo",
-                    "operationId": "create_todo",
-                    "security": [
-                        {
-                            "oauth": [
-                                "write"
-                            ]
-                        }
-                    ],
-                    "parameters": [
-                        {
-                            "$ref": "#/parameters/BasicTodo"
-                        }
-                    ],
-                    "responses": {
-                        "200": {
-                            "description": "create a todo",
-                            "schema": {
-                                "$ref": "#/definitions/TodoId"
-                            }
-                        }
-                    }
-                }
-            },
-            "/todos/{id}/": {
-                "parameters": [
+                        "$ref": "#/parameters/LimitParameter"
+                    },
                     {
-                        "$ref": "#/parameters/TodoId"
+                        "$ref": "#/parameters/GetUserObservationsParameter"
                     }
                 ],
-                "get": {
-                    "summary": "Get a todo",
-                    "description": "Returns a todo.",
-                    "operationId": "get_todo",
-                    "security": [
-                        {
-                            "oauth": [
-                                "read"
-                            ]
-                        }
-                    ],
-                    "responses": {
-                        "200": {
-                            "description": "A todo",
-                            "schema": {
-                                "$ref": "#/definitions/Todo"
-                            }
-                        }
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/GetUserObservationsResponse"
                     }
-                },
-                "put": {
-                    "parameters": [
-                        {
-                            "$ref": "#/parameters/BasicTodo"
-                        }
-                    ],
-                    "summary": "Updates a todo",
-                    "description": "Updates a todo.",
-                    "operationId": "update_todo",
-                    "security": [
-                        {
-                            "oauth": [
-                                "update"
-                            ]
-                        }
-                    ],
-                    "responses": {
-                        "200": {
-                            "$ref": "#/responses/SuccessResponse"
-                        }
+                }
+            }
+        },
+
+        "/assigned/observations/v1/": {
+            "get": {
+                "operationId": "assigned_observations",
+                "summary": "Get Rp Assigned Observations",
+                "description": "Assigned observations",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                        "$ref": "#/parameters/OffsetParameter"
+                    },
+                    {
+                        "$ref": "#/parameters/LimitParameter"
+                    },
+                    {
+                        "$ref": "#/parameters/GetAssignedObservationsParameter"
                     }
-                },
-                "delete": {
-                    "summary": "Deletes a todo",
-                    "description": "Deletes a todo.",
-                    "operationId": "delete_todo",
-                    "security": [
-                        {
-                            "oauth": [
-                                "delete"
-                            ]
-                        }
-                    ],
-                    "responses": {
-                        "200": {
-                            "$ref": "#/responses/SuccessResponse"
-                        }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/GetAssignedObservationsResponse"
+                    }
+                }
+            }
+        },
+
+        "/admin/observations/v1/": {
+            "get": {
+                "operationId": "get_admin_observations",
+                "summary": "Get Total Observations",
+                "description": "Total Observations",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                        "$ref": "#/parameters/OffsetParameter"
+                    },
+                    {
+                        "$ref": "#/parameters/LimitParameter"
+                    },
+                    {
+                        "$ref": "#/parameters/GetAdminObservationsParameter"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/GetAdminObservationsResponse"
                     }
                 }
             }
         }
+
     }
-    
+}
