@@ -68,10 +68,10 @@ class PresenterImplementation(PresenterInterface):
     def user_not_allowed_to_create_resource(self):
         raise BadRequest(*USER_NOT_ALLOWED_TO_CREATE)
 
-    def unauthorized_user(self):
+    def raise_exception_for_unauthorized_user(self):
         raise BadRequest(*UNAUTHORIZED_USER)
 
-    def invalid_resource_id(self):
+    def raise_exception_for_invalid_resource_id(self):
         raise NotFound(*INVALID_RESOURCE)
 
     @staticmethod

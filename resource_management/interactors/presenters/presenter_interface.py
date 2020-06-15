@@ -41,11 +41,11 @@ class PresenterInterface:
         pass
 
     @abstractmethod
-    def unauthorized_user(self):
+    def raise_exception_for_unauthorized_user(self):
         pass
 
     @abstractmethod
-    def invalid_resource_id(self):
+    def raise_exception_for_invalid_resource_id(self):
         pass
 
     @abstractmethod

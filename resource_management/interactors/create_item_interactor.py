@@ -6,18 +6,38 @@ from resource_management.interactors.storages.item_storage_interface import \
     ItemStorageInterface
 from resource_management.interactors.presenters.presenter_interface import \
     PresenterInterface
+from resource_management.exceptions.exceptions import (
+    UnAuthorizedUserException,
+    InvalidResourceException
+)
 
 
 class CreateItemInteractor:
 
     def __init__(self, user_storage: UserStorageInterface,
                  resource_storage: ResourceStorageInterface,
-                 item_storage: ItemStorageInterface,
-                 presenter: PresenterInterface):
+                 item_storage: ItemStorageInterface):
         self.user_storage = user_storage
         self.resource_storage = resource_storage
         self.item_storage = item_storage
-        self.presenter = presenter
+
+
+    def create_item_wrapper(self,
+                            user_id: int, resource_id: int,
+                            title: str, description: str,
+                            link: str, presenter: PresenterInterface):
+        try:
+            self.create_item(
+                user_id=user_id,
+                resource_id=resource_id,
+                title=title,
+                description=description,
+                link=link
+            )
+        except UnAuthorizedUserException:
+            presenter.raise_exception_for_unauthorized_user()
+        except InvalidResourceException:
+            presenter.raise_exception_for_invalid_resource_id()
 
     def create_item(self, user_id: int, resource_id: int, title: str,
                     description: str, link: str):
@@ -35,8 +55,7 @@ class CreateItemInteractor:
         is_admin = self.user_storage.is_user_admin_or_not(user_id=user_id)
         is_not_admin = not is_admin
         if is_not_admin:
-            self.presenter.unauthorized_user()
-            return
+            raise UnAuthorizedUserException
 
     def validate_resource(self, resource_id: int):
         is_valid_resource = self.resource_storage.is_valid_resource_id(
@@ -44,5 +63,4 @@ class CreateItemInteractor:
         )
         is_not_valid_resource = not is_valid_resource
         if is_not_valid_resource:
-            self.presenter.invalid_resource_id()
-            return
+            raise InvalidResourceException

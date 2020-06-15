@@ -4,7 +4,7 @@ class UserDoesNotExist(Exception):
 class InvalidPassword(Exception):
     pass
 
-class UnAuthorizedUser(Exception):
+class UnAuthorizedUserException(Exception):
     pass
 
 class UserNameAlreadyExist(Exception):
@@ -13,7 +13,7 @@ class UserNameAlreadyExist(Exception):
 class UserNotAllowedToCreate(Exception):
     pass
 
-class InvalidResource(Exception):
+class InvalidResourceException(Exception):
     pass
 
 class InvalidItem(Exception):
