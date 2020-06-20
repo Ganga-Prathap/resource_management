@@ -6,77 +6,76 @@ from resource_management.interactors.storages.item_storage_interface import \
     ItemStorageInterface
 from resource_management.interactors.presenters.presenter_interface import \
     PresenterInterface
+from resource_management.interactors.get_items import GetItems
+from resource_management.exceptions.exceptions import (
+    UnAuthorizedUserException,
+    InvalidResourceIdException,
+    InvalidOffsetException,
+    InvalidLimitException
+)
+from resource_management.interactors.validation_mixer import ValidationMixer
 
 
-class GetResourceItemsInteractor:
+class GetResourceItemsInteractor(ValidationMixer):
 
     def __init__(self, user_storage: UserStorageInterface,
                  resource_storage: ResourceStorageInterface,
-                 item_storage: ItemStorageInterface,
-                 presenter: PresenterInterface):
+                 item_storage: ItemStorageInterface):
         self.user_storage = user_storage
         self.resource_storage = resource_storage
         self.item_storage = item_storage
-        self.presenter = presenter
+
+    def get_resource_items_wrapper(self, user_id: int,
+                                   resource_id: int,
+                                   offset: int,
+                                   limit: int,
+                                   presenter: PresenterInterface):
+        try:
+            return self.get_resource_items_response(
+                user_id=user_id,
+                resource_id=resource_id,
+                offset=offset,
+                limit=limit,
+                presenter=presenter
+            )
+        except UnAuthorizedUserException as error:
+            presenter.raise_exception_for_unauthorized_user(error)
+        except InvalidResourceIdException as error:
+            presenter.raise_exception_for_invalid_resource_id(error)
+        except InvalidOffsetException as error:
+            presenter.raise_exception_for_invalid_offset_value(error)
+        except InvalidLimitException as error:
+            presenter.raise_exception_for_invalid_limit_value(error)
+
+    def get_resource_items_response(self, user_id: int,
+                                    resource_id: int,
+                                    offset: int,
+                                    limit: int,
+                                    presenter: PresenterInterface):
+        resource_items_dto, items_count = self.get_resource_items(
+            user_id=user_id,
+            resource_id=resource_id,
+            offset=offset,
+            limit=limit
+        )
+        return presenter.get_resource_items_response(
+            resource_items_dto, items_count)
 
     def get_resource_items(self, user_id: int,
                            resource_id: int,
                            offset: int,
                            limit: int):
 
-        self.validate_offset_value(offset)
-        self.validate_limit_value(limit)
         self.validate_admin(user_id)
         self.validate_resource(resource_id)
+        self.validate_offset_value(offset)
+        self.validate_limit_value(limit)
 
         items_count = self.item_storage.get_resource_items_count(
             resource_id=resource_id
         )
-        items_dto_list = self.item_storage.get_resource_items(
-            resource_id=resource_id, offset=offset, limit=limit
-        )
-        items_dict_list = self.presenter.get_resource_items_response(
-            items_dto_list=items_dto_list,
-            items_count=items_count
-        )
-        return items_dict_list
-
-    def validate_admin(self, user_id: int):
-        is_admin = self.user_storage.is_user_admin_or_not(user_id=user_id)
-        is_not_admin = not is_admin
-        if is_not_admin:
-            self.presenter.unauthorized_user()
-            return
-
-    def validate_offset_value(self, offset: int):
-        is_offset_valid = self._check_offset_value(offset)
-        is_offset_invalid = not is_offset_valid
-        if is_offset_invalid:
-            self.presenter.invalidOffsetValue()
-            return
-
-    def validate_limit_value(self, limit: int):
-        is_limit_valid = self._check_limit_value(limit)
-        is_limit_invalid = not is_limit_valid
-        if is_limit_invalid:
-            self.presenter.invalidLimitValue()
-            return
-
-    def validate_resource(self, resource_id: int):
-        is_valid_resource = self.resource_storage.is_valid_resource_id(
-            resource_id=resource_id
-        )
-        is_not_valid_resource = not is_valid_resource
-        if is_not_valid_resource:
-            self.presenter.invalid_resource_id()
-            return
-
-    def _check_offset_value(self, offset):
-        if offset < 0:
-            return False
-        return True
-
-    def _check_limit_value(self, limit):
-        if limit < 0:
-            return False
-        return True
+        item_ids = self.item_storage.get_resource_item_ids(
+            resource_id, offset, limit)
+        get_items_interactor = GetItems(item_storage=self.item_storage)
+        items_dto, items_count = get_items_interactor.get_items(item_ids)
+        return items_dto, items_count

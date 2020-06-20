@@ -71,6 +71,47 @@ def admin_request_dto():
     ]
     return request_dto
 
+
+@pytest.fixture
+def items_dto():
+    item_dto = [
+        ItemDto(
+            item_id=1,
+            title='item1',
+            resource_name='github',
+            description='item_description',
+            link='https://item1'
+        ),
+        ItemDto(
+            item_id=2,
+            title='item2',
+            resource_name='github2',
+            description='item2_description',
+            link='https://item2'
+        )
+    ]
+    return item_dto
+
+@pytest.fixture
+def resource_items_dto():
+    item_dto = [
+        ItemDto(
+            item_id=1,
+            title='item1',
+            resource_name='github',
+            description='item_description',
+            link='https://item1'
+        ),
+        ItemDto(
+            item_id=2,
+            title='item2',
+            resource_name='github',
+            description='item2_description',
+            link='https://item2'
+        )
+    ]
+    return item_dto
+
 """
 
 

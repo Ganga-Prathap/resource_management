@@ -23,24 +23,22 @@ def test_get_user_items_when_offset_value_is_invalid_raise_exception():
     item_storage = create_autospec(ItemStorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    presenter.invalidOffsetValue.side_effect = BadRequest
+    presenter.raise_exception_for_invalid_offset_value.side_effect = BadRequest
 
     interactor = GetUserItemsInteractor(
         user_storage=user_storage,
-        item_storage=item_storage,
-        presenter=presenter
+        item_storage=item_storage
     )
 
     #Act
     with pytest.raises(BadRequest):
-        interactor.get_user_items(
-            user_id=user_id,
-            offset=offset,
-            limit=limit
-        )
+        interactor.get_user_items_wrapper(user_id=user_id,
+                                          offset=offset,
+                                          limit=limit,
+                                          presenter=presenter)
 
     #Assert
-    presenter.invalidOffsetValue.assert_called_once()
+    presenter.raise_exception_for_invalid_offset_value.assert_called_once()
 
 def test_get_user_items_when_limit_value_is_invalid_raise_exception():
 
@@ -53,24 +51,22 @@ def test_get_user_items_when_limit_value_is_invalid_raise_exception():
     item_storage = create_autospec(ItemStorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    presenter.invalidLimitValue.side_effect = BadRequest
+    presenter.raise_exception_for_invalid_limit_value.side_effect = BadRequest
 
     interactor = GetUserItemsInteractor(
         user_storage=user_storage,
-        item_storage=item_storage,
-        presenter=presenter
+        item_storage=item_storage
     )
 
     #Act
     with pytest.raises(BadRequest):
-        interactor.get_user_items(
-            user_id=user_id,
-            offset=offset,
-            limit=limit
-        )
+        interactor.get_user_items_wrapper(user_id=user_id,
+                                          offset=offset,
+                                          limit=limit,
+                                          presenter=presenter)
 
     #Assert
-    presenter.invalidLimitValue.assert_called_once()
+    presenter.raise_exception_for_invalid_limit_value.assert_called_once()
 
 
 def test_get_user_items_when_user_id_is_invalid_raise_exception():
@@ -85,25 +81,23 @@ def test_get_user_items_when_user_id_is_invalid_raise_exception():
     presenter = create_autospec(PresenterInterface)
 
     user_storage.is_valid_user.return_value = False
-    presenter.invalid_user.side_effect = NotFound
+    presenter.raise_exception_for_invalid_user.side_effect = NotFound
 
     interactor = GetUserItemsInteractor(
         user_storage=user_storage,
-        item_storage=item_storage,
-        presenter=presenter
+        item_storage=item_storage
     )
 
     #Act
     with pytest.raises(NotFound):
-        interactor.get_user_items(
-            user_id=user_id,
-            offset=offset,
-            limit=limit
-        )
+        interactor.get_user_items_wrapper(user_id=user_id,
+                                          offset=offset,
+                                          limit=limit,
+                                          presenter=presenter)
 
     #Assert
     user_storage.is_valid_user.assert_called_with(user_id=user_id)
-    presenter.invalid_user.assert_called_once()
+    presenter.raise_exception_for_invalid_user.assert_called_once()
 
 
 def test_get_user_items_with_valid_details(item_dto):
@@ -137,14 +131,14 @@ def test_get_user_items_with_valid_details(item_dto):
     interactor = GetUserItemsInteractor(
         user_storage=user_storage,
         item_storage=item_storage,
-        presenter=presenter
     )
 
     #Act
-    actual_items_dict = interactor.get_user_items(
-            user_id=user_id,
-            offset=offset,
-            limit=limit
+    actual_items_dict = interactor.get_user_items_wrapper(
+        user_id=user_id,
+        offset=offset,
+        limit=limit,
+        presenter=presenter
     )
 
     #Assert

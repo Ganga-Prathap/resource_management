@@ -6,6 +6,27 @@ from .dtos import ItemDto
 class ItemStorageInterface:
 
     @abstractmethod
+    def get_valid_item_ids(self, item_ids: List[int]) -> List[int]:
+        pass
+
+    @abstractmethod
+    def get_items(self, item_ids: List[int]) -> List[ItemDto]:
+        pass
+
+    @abstractmethod
+    def get_resource_item_ids(self, resource_id: int,
+                              offset: int, limit: int) -> List[int]:
+        pass
+
+    
+
+
+
+
+
+
+
+    @abstractmethod
     def create_item(self, resource_id: int,
                     title: str,
                     description: str,

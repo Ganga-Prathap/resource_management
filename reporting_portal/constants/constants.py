@@ -1,0 +1,1 @@
+BREAK_FAST_TIME = '06:00'

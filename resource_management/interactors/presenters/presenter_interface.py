@@ -7,9 +7,66 @@ from resource_management.interactors.storages.dtos import (
     ItemDto,
     RequestDto
 )
+from resource_management.exceptions.exceptions import (
+    InvalidUserException,
+    InvalidOffsetException,
+    InvalidLimitException,
+    InvalidItemIds,
+    UnAuthorizedUserException,
+    InvalidResourceIdException,
+    InvalidOffsetException,
+    InvalidLimitException
+)
 
 
 class PresenterInterface:
+
+    @abstractmethod
+    def get_resource_items_response(self, items_dto: List[ItemDto],
+                                    items_count: int):
+        pass
+
+    @abstractmethod
+    def raise_exception_for_invalid_item_ids(
+            self,
+            error: InvalidItemIds):
+        pass
+
+    @abstractmethod
+    def get_items_response(self, items_dto: List[ItemDto]):
+        pass
+
+    @abstractmethod
+    def raise_exception_for_unauthorized_user(
+            self,
+            error: UnAuthorizedUserException):
+        pass
+
+    @abstractmethod
+    def raise_exception_for_invalid_resource_id(
+            self,
+            error: InvalidResourceIdException):
+        pass
+
+    @abstractmethod
+    def raise_exception_for_invalid_offset_value(
+            self,
+            error: InvalidOffsetException):
+        pass
+
+    @abstractmethod
+    def raise_exception_for_invalid_limit_value(
+            self,
+            error: InvalidLimitException):
+        pass
+
+
+
+
+
+
+
+
 
     @abstractmethod
     def username_not_exists(self):
@@ -26,10 +83,6 @@ class PresenterInterface:
 
     @abstractmethod
     def username_already_exists(self):
-        pass
-
-    @abstractmethod
-    def invalid_user(self):
         pass
 
     @abstractmethod
@@ -63,17 +116,23 @@ class PresenterInterface:
         pass
 
     @abstractmethod
-    def invalidOffsetValue(self):
+    def raise_exception_for_invalid_user(
+            self,
+            error: InvalidUserException):
         pass
 
     @abstractmethod
-    def invalidLimitValue(self):
+    def raise_exception_for_invalid_offset_value(
+            self,
+            error: InvalidOffsetException):
         pass
 
     @abstractmethod
-    def get_resource_items_response(self, items_dto_list: List[ItemDto],
-                                    items_count: int):
+    def raise_exception_for_invalid_limit_value(
+            self,
+            error: InvalidLimitException):
         pass
+
 
     @abstractmethod
     def invalid_item_id(self):
