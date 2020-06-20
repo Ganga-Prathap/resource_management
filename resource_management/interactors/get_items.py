@@ -26,8 +26,10 @@ class GetItems:
 
     def get_items(self, item_ids: List[int]):
         item_ids = list(set(item_ids))
+
         #TODO: VALIDATE ITEM IDS
         self._validate_item_ids(item_ids)
+
         #TODO: GET ITEMS DTOS
         items_dto = self.item_storage.get_items(item_ids)
         return items_dto

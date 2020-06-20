@@ -76,6 +76,8 @@ class GetResourceItemsInteractor(ValidationMixer):
         )
         item_ids = self.item_storage.get_resource_item_ids(
             resource_id, offset, limit)
+
         get_items_interactor = GetItems(item_storage=self.item_storage)
         items_dto = get_items_interactor.get_items(item_ids)
+
         return items_dto, items_count
