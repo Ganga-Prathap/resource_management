@@ -8,9 +8,10 @@ from resource_management.exceptions.exceptions import (
     UnAuthorizedUserException,
     InvalidResourceIdException
 )
+from resource_management.interactors.validation_mixer import ValidationMixer
 
 
-class GetResourceDetailsInteractor:
+class GetResourceDetailsInteractor(ValidationMixer):
 
     def __init__(self, user_storage: UserStorageInterface,
                  resource_storage: ResourceStorageInterface):
@@ -21,23 +22,29 @@ class GetResourceDetailsInteractor:
                                      resource_id: int,
                                      presenter: PresenterInterface):
         try:
-            self.get_resource_details_response(
+            return self.get_resource_details_response(
                 user_id=user_id,
                 resource_id=resource_id,
                 presenter=presenter)
+
         except UnAuthorizedUserException as error:
             presenter.raise_exception_for_unauthorized_user(error)
+
         except InvalidResourceIdException as error:
             presenter.raise_exception_for_invalid_resource_id(error)
 
     def get_resource_details_response(self, user_id: int,
                                       resource_id: int,
                                       presenter: PresenterInterface):
-        resource_dto = self.get_resource_details(user_id=user_id,
-                                      resource_id=resource_id)
-        response = self.presenter.get_resource_details_response(
+
+        resource_dto = self.get_resource_details(
+            user_id=user_id,
+            resource_id=resource_id
+        )
+        response = presenter.get_resource_details_response(
             resourcedto=resource_dto
         )
+
         return response
 
     def get_resource_details(self, user_id: int,
@@ -49,20 +56,4 @@ class GetResourceDetailsInteractor:
         resource_dto = self.resource_storage.get_resource_details(
             resource_id=resource_id
         )
-
-
-    def validate_admin(self, user_id: int):
-        is_admin = self.user_storage.is_user_admin_or_not(user_id=user_id)
-        is_not_admin = not is_admin
-        if is_not_admin:
-            self.presenter.unauthorized_user()
-            return
-
-    def validate_resource(self, resource_id: int):
-        is_valid_resource = self.resource_storage.is_valid_resource_id(
-            resource_id=resource_id
-        )
-        is_not_valid_resource = not is_valid_resource
-        if is_not_valid_resource:
-            self.presenter.invalid_resource_id()
-            return
+        return resource_dto

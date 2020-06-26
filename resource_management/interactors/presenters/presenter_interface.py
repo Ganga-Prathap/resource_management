@@ -60,6 +60,10 @@ class PresenterInterface:
             error: InvalidLimitException):
         pass
 
+    @abstractmethod
+    def get_resource_details_response(self, resourcedto: ResourceDto):
+        pass
+
 
 
 
@@ -102,10 +106,6 @@ class PresenterInterface:
         pass
 
     @abstractmethod
-    def get_resource_details_response(self, resourcedto: ResourceDto):
-        pass
-
-    @abstractmethod
     def user_not_allowed_to_update_resource(self):
         pass
 
@@ -120,7 +120,7 @@ class PresenterInterface:
             self,
             error: InvalidUserException):
         pass
-
+    """
     @abstractmethod
     def raise_exception_for_invalid_offset_value(
             self,
@@ -132,7 +132,7 @@ class PresenterInterface:
             self,
             error: InvalidLimitException):
         pass
-
+    """
 
     @abstractmethod
     def invalid_item_id(self):

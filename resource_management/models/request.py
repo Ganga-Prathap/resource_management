@@ -10,6 +10,7 @@ class Request(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
+
     access_level = models.CharField(
         choices=[
             (access.value, access.name)
@@ -17,8 +18,10 @@ class Request(models.Model):
         ],
         max_length=100
     )
+
     due_date_time = models.DateTimeField(null=True, blank=True)
     description = models.TextField()
+
     status = models.CharField(
         choices=[
             (status.value, status.name)

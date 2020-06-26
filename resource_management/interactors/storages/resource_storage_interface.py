@@ -20,6 +20,9 @@ class ResourceStorageInterface:
     def get_resource_details(self, resource_id: int) -> ResourceDto:
         pass
 
+
+
+
     @abstractmethod
     def update_resource(self, resource_id: int,
                          resource_name: str,
