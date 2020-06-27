@@ -8,6 +8,3 @@ class Item(models.Model):
     link = models.URLField()
     resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
     users = models.ManyToManyField(User)
-
-    def __str__(self):
-        return self.title

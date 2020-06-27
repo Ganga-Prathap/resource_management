@@ -30,7 +30,10 @@ class TestCase01SignupAPITestCase(CustomAPITestCase):
     url_suffix = URL_SUFFIX
     test_case_dict = TEST_CASE
 
+    def setupUser(self, username, password):
+        super().setupUser(
+            username=username, password=password
+        )
+
     def test_case(self):
-        self.default_test_case() # Returns response object.
-        # Which can be used for further response object checks.
-        # Add database state checks here.
+        self.default_test_case()

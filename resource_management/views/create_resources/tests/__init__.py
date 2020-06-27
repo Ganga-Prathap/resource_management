@@ -6,7 +6,9 @@ REQUEST_METHOD = "post"
 URL_SUFFIX = "admin/resources/create/v1/"
 
 from .test_case_01 import TestCase01CreateResourcesAPITestCase
+from .test_case_02 import TestCase02CreateResourcesAPITestCase
 
 __all__ = [
-    "TestCase01CreateResourcesAPITestCase"
+    "TestCase01CreateResourcesAPITestCase",
+    "TestCase02CreateResourcesAPITestCase"
 ]
