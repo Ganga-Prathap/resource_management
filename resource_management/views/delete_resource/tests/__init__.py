@@ -6,7 +6,11 @@ REQUEST_METHOD = "delete"
 URL_SUFFIX = "admin/resources/{resource_id}/delete/v1/"
 
 from .test_case_01 import TestCase01DeleteResourceAPITestCase
+from .test_case_02 import TestCase02DeleteResourceAPITestCase
+from .test_case_03 import TestCase03DeleteResourceAPITestCase
 
 __all__ = [
-    "TestCase01DeleteResourceAPITestCase"
+    "TestCase01DeleteResourceAPITestCase",
+    "TestCase02DeleteResourceAPITestCase",
+    "TestCase03DeleteResourceAPITestCase"
 ]

@@ -5,6 +5,3 @@ class Resource(models.Model):
     description = models.TextField()
     link = models.URLField()
     thumbnail = models.URLField()
-
-    def __str__(self):
-        return self.resource_name

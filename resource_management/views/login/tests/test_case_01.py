@@ -30,7 +30,14 @@ class TestCase01LoginAPITestCase(CustomAPITestCase):
     url_suffix = URL_SUFFIX
     test_case_dict = TEST_CASE
 
+    def setupUser(self, username, password):
+        super(TestCase01LoginAPITestCase, self).setupUser(
+            username=username, password=password
+        )
+        #user = UserFactory()
+        print("1: \n")
+
     def test_case(self):
-        self.default_test_case() # Returns response object.
-        # Which can be used for further response object checks.
-        # Add database state checks here.
+        print("2: \n")
+        self.default_test_case()
+        print("3: \n")
