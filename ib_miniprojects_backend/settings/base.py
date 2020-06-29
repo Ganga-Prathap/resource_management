@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # Quick-start development conf - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
-AUTH_USER_MODEL = "resource_management.User"
+AUTH_USER_MODEL = "resource_management_auth.User"
 
 DEFAULT_OAUTH_APPLICATION_NAME = "resource_management"
 DEFAULT_OAUTH_CLIENT_ID = ""
