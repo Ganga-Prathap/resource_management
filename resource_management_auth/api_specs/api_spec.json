@@ -1,0 +1,181 @@
+{
+    "swagger": "2.0",
+    "host": "127.0.0.1:8000",
+    "basePath": "/resource_management_auth/",
+    "info": {
+        "version": "1.0.0",
+        "title": "Simple API",
+        "description": "A simple API to learn how to write OpenAPI Specification"
+    },
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "securityDefinitions": {
+        "oauth": {
+            "tokenUrl": "http://auth.ibtspl.com/oauth2/",
+            "flow": "password",
+            "scopes": {
+                "read": "read users",
+                "write": "create users",
+                "update": "update users",
+                "delete": "delete users"
+            },
+            "type": "oauth2"
+        }
+    },
+
+    "definitions": {
+
+    },
+
+    "parameters": {
+
+        "UserSignupParameter": {
+            "name": "user_signup",
+            "in": "body",
+            "required": true,
+            "description": "create user",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "username",
+                    "password"
+                ]
+            }
+        },
+
+        "UserLoginParameter": {
+            "name": "user_login",
+            "in": "body",
+            "required": true,
+            "description": "user login",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "username",
+                    "password"
+                ]
+            }
+        }
+    },
+
+    "responses": {
+
+        "UserSignupResponse": {
+            "description": "successfully created",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "access_token": {
+                        "type": "string"
+                    },
+                    "is_admin": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "access_token",
+                    "is_admin"
+                ]
+            }
+        },
+
+        "UsernameAlreadyExistsResponse": {
+            "description": "user name already existed"
+        },
+
+        "UserLoginResponse": {
+            "description": "user login successfully",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "access_token": {
+                        "type": "string"
+                    },
+                    "is_admin": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "access_token",
+                    "is_admin"
+                ]
+            }
+        },
+
+        "UsernameDoesnotExistResponse": {
+            "description": "Username Doesnot Exist"
+        },
+
+        "InvalidPasswordResponse": {
+            "description": "Invalid Password"
+        }
+
+    },
+    "paths": {
+
+        "/user/signup/v1/": {
+            "post": {
+                "operationId": "signup",
+                "summary": "New User Signup",
+                "description": "Create New user",
+                "parameters": [{
+                    "$ref": "#/parameters/UserSignupParameter"
+                }],
+                "responses": {
+                    "201": {
+                        "$ref": "#/responses/UserSignupResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/UsernameAlreadyExistsResponse"
+                    }
+                }
+            }
+        },
+
+        "/user/login/v1/": {
+            "post": {
+                "operationId": "login",
+                "summary": "User Login",
+                "description": "User Login",
+                "parameters": [{
+                    "$ref": "#/parameters/UserLoginParameter"
+                }],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/UserLoginResponse"
+                    },
+                    "404": {
+                        "$ref": "#/responses/UsernameDoesnotExistResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/InvalidPasswordResponse"
+                    }
+                }
+            }
+        }
+
+    }
+}

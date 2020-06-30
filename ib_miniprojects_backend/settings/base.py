@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 
 AUTH_USER_MODEL = "resource_management_auth.User"
 
-DEFAULT_OAUTH_APPLICATION_NAME = "resource_management"
+DEFAULT_OAUTH_APPLICATION_NAME = "resource_management_auth"
 DEFAULT_OAUTH_CLIENT_ID = ""
 DEFAULT_OAUTH_CLIENT_SECRET = ""
 DEFAULT_OAUTH_SCOPES = "read write"
