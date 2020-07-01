@@ -2,7 +2,6 @@ import pytest
 import datetime
 from resource_management.constants.enums import AccessLevelEnum
 from django.contrib.auth.hashers import make_password
-from resource_management.models.user import User
 from resource_management.dtos.dtos import ResourceDto
 from resource_management.dtos.dtos import RequestDto
 from resource_management.dtos.dtos import ItemDto
@@ -62,7 +61,6 @@ def admin_request_dto():
         RequestDto(
             request_id=1,
             username='Prathap',
-            profile_pic='https://prathap.profile',
             resource_name='resource1',
             item_name='item1',
             access_level=AccessLevelEnum.READ.value,

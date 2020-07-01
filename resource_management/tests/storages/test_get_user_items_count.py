@@ -4,8 +4,8 @@ from resource_management.storages.item_storage_implementation import \
 
 
 @pytest.mark.django_db
-def test_get_user_items_count(normal_user, create_resource,
-                              create_item, item_to_user):
+def test_get_user_items_count(create_resource,
+                              create_item, create_useritems):
 
     #Arrange
     user_id = 1

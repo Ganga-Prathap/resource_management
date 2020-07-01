@@ -22,5 +22,20 @@ class StorageInterface:
         pass
 
     @abstractmethod
-    def get_user_details(self, user_id) -> Optional[UserDto]:
+    def get_user_details(self, user_id: int) -> Optional[UserDto]:
+        pass
+
+    @abstractmethod
+    def is_valid_user(self, user_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def get_user_info(self, user_id: int) -> UserDto:
+        pass
+
+    @abstractmethod
+    def user_profile_update(self, user_id: int, username: str,
+                            email: str, job_role: str,
+                            department: str, gender: str,
+                            profile_pic: str):
         pass

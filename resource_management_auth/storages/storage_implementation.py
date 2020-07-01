@@ -6,7 +6,7 @@ from resource_management_auth.exceptions.exceptions import (
     InvalidPassword,
     InvalidUserId
 )
-from resource_management_auth.dtos.dtos import UserDto
+from resource_management_auth.dtos.dtos import UserDto, UserInfoDto
 
 
 class StorageImplementation(StorageInterface):
@@ -45,3 +45,28 @@ class StorageImplementation(StorageInterface):
                 username=user_obj.username,
                 is_admin=user_obj.is_admin
             )
+
+    def is_valid_user(self, user_id: int) -> bool:
+        return User.objects.filter(id=user_id).exists()
+
+    def get_user_info(self, user_id: int) -> UserInfoDto:
+        user_obj = User.objects.get(id=user_id)
+        return UserInfoDto(
+            user_id=user_obj.id,
+            username=user_obj.username,
+            email=user_obj.email,
+            job_role=user_obj.job_role,
+            department=user_obj.department,
+            gender=user_obj.gender,
+            profile_pic=user_obj.profile_pic
+            )
+
+
+    def user_profile_update(self, user_id: int, username: str,
+                            email: str, job_role: str,
+                            department: str, gender: str,
+                            profile_pic: str):
+        User.objects.filter(id=user_id).update(
+            username=username, email=email, job_role=job_role,
+            department=department, gender=gender, profile_pic=profile_pic
+        )

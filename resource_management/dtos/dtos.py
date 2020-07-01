@@ -2,7 +2,7 @@ from datetime import datetime
 from dataclasses import dataclass
 from resource_management.constants.enums import AccessLevelEnum
 
-
+"""
 @dataclass
 class UserDto:
     user_id: int
@@ -12,6 +12,13 @@ class UserDto:
     department: str
     gender: str
     profile_pic: str
+"""
+@dataclass
+class UserDto:
+    user_id: int
+    username: str
+    is_admin: bool
+
 
 @dataclass
 class ResourceDto:
@@ -33,7 +40,6 @@ class ItemDto:
 class RequestDto:
     request_id: int
     username: str
-    profile_pic: str
     resource_name: str
     item_name: str
     access_level: AccessLevelEnum

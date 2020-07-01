@@ -32,6 +32,42 @@
 
     "definitions": {
 
+        "User": {
+            "type": "object",
+            "properties": {
+                "user_id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "job_role": {
+                    "type": "string"
+                },
+                "department": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "profile_pic": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "user_id",
+                "username",
+                "email",
+                "job_role",
+                "department",
+                "gender",
+                "profile_pic"
+            ]
+        }
+
     },
 
     "parameters": {
@@ -78,7 +114,55 @@
                     "password"
                 ]
             }
+        },
+
+        "UserProfileUpdateParameter": {
+            "name": "user_profile_update",
+            "in": "body",
+            "required": true,
+            "description": "user profile",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "job_role": {
+                        "type": "string"
+                    },
+                    "department": {
+                        "type": "string"
+                    },
+                    "gender": {
+                        "type": "string"
+                    },
+                    "profile_pic": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "username",
+                    "email",
+                    "job_role",
+                    "department",
+                    "gender",
+                    "profile_pic"
+                ]
+            }
+        },
+
+        "UserIdParameter": {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "user id",
+            "type": "integer",
+            "format": "int64"
         }
+
     },
 
     "responses": {
@@ -131,6 +215,21 @@
 
         "InvalidPasswordResponse": {
             "description": "Invalid Password"
+        },
+
+        "UserDetailsResponse": {
+            "description": "Success Response",
+            "schema": {
+                "$ref": "#/definitions/User"
+            }
+        },
+
+        "InvalidUserResponse": {
+            "description": "Invalid User"
+        },
+
+        "UserProfileUpdateResponse": {
+            "description": "Updated Successfully"
         }
 
     },
@@ -172,6 +271,56 @@
                     },
                     "400": {
                         "$ref": "#/responses/InvalidPasswordResponse"
+                    }
+                }
+            }
+        },
+
+        "/user/{user_id}/details/v1/": {
+            "get": {
+                "operationId": "get_user_details",
+                "summary": "Get User Details",
+                "description": "Get User's Details",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                    "$ref": "#/parameters/UserIdParameter"
+                }],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/UserDetailsResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/InvalidUserResponse"
+                    }
+                }
+            }
+        },
+
+        "/user/profile/update/v1/": {
+            "post": {
+                "operationId": "user_profile_update",
+                "summary": "User Profile Update",
+                "description": "User Profile",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                    "$ref": "#/parameters/UserProfileUpdateParameter"
+                }],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/UserProfileUpdateResponse"
+                    },
+                    "404": {
+                        "$ref": "#/responses/InvalidUserResponse"
                     }
                 }
             }

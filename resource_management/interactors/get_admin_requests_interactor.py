@@ -1,5 +1,3 @@
-from resource_management.interactors.storages.user_storage_interface import \
-    UserStorageInterface
 from resource_management.interactors.storages.request_storage_interface \
     import RequestStorageInterface
 from resource_management.interactors.presenters.presenter_interface import \
@@ -8,10 +6,8 @@ from resource_management.interactors.presenters.presenter_interface import \
 
 class GetAdminRequestsInteractor:
 
-    def __init__(self, user_storage: UserStorageInterface,
-                 request_storage: RequestStorageInterface,
+    def __init__(self, request_storage: RequestStorageInterface,
                  presenter: PresenterInterface):
-        self.user_storage = user_storage
         self.request_storage = request_storage
         self.presenter = presenter
 
@@ -33,8 +29,11 @@ class GetAdminRequestsInteractor:
         return requests_dict
 
     def validate_admin(self, user_id: int):
-        is_admin = self.user_storage.is_user_admin_or_not(user_id=user_id)
-        is_not_admin = not is_admin
+        from resource_management.adapters.service_adapter import \
+            get_service_adapter
+        service_adapter = get_service_adapter()
+        userdto = service_adapter.auth_service.get_user_details(user_id)
+        is_not_admin = not userdto.is_admin
         if is_not_admin:
             self.presenter.unauthorized_user()
             return

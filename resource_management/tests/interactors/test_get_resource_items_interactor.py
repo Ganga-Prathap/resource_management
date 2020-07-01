@@ -1,9 +1,7 @@
 import pytest
-from unittest.mock import create_autospec
+from unittest.mock import create_autospec, patch
 from resource_management.interactors.get_resource_items_interactor import \
     GetResourceItemsInteractor
-from resource_management.interactors.storages.user_storage_interface import \
-    UserStorageInterface
 from resource_management.interactors.storages.resource_storage_interface \
     import ResourceStorageInterface
 from resource_management.interactors.storages.item_storage_interface import \
@@ -21,7 +19,6 @@ def test_get_resource_items_when_offset_value_is_invalid_raise_exception():
     offset = -1
     limit = 1
 
-    user_storage = create_autospec(UserStorageInterface)
     resource_storage = create_autospec(ResourceStorageInterface)
     item_storage = create_autospec(ItemStorageInterface)
     presenter = create_autospec(PresenterInterface)
@@ -29,7 +26,6 @@ def test_get_resource_items_when_offset_value_is_invalid_raise_exception():
     presenter.invalidOffsetValue.side_effect = BadRequest
 
     interactor = GetResourceItemsInteractor(
-        user_storage=user_storage,
         resource_storage=resource_storage,
         item_storage=item_storage,
         presenter=presenter
@@ -56,7 +52,6 @@ def test_get_resource_items_when_limit_value_is_invalid_raise_exception():
     offset = 0
     limit = -1
 
-    user_storage = create_autospec(UserStorageInterface)
     resource_storage = create_autospec(ResourceStorageInterface)
     item_storage = create_autospec(ItemStorageInterface)
     presenter = create_autospec(PresenterInterface)
@@ -64,7 +59,6 @@ def test_get_resource_items_when_limit_value_is_invalid_raise_exception():
     presenter.invalidLimitValue.side_effect = BadRequest
 
     interactor = GetResourceItemsInteractor(
-        user_storage=user_storage,
         resource_storage=resource_storage,
         item_storage=item_storage,
         presenter=presenter
@@ -82,25 +76,30 @@ def test_get_resource_items_when_limit_value_is_invalid_raise_exception():
     #Assert
     presenter.invalidLimitValue.assert_called_once()
 
-
-def test_get_resource_items_when_user_is_not_admin_raise_exception():
+@patch('resource_management_auth.interfaces.service_interface.ServiceInterface.get_user_dto')
+def test_get_resource_items_when_user_is_not_admin_raise_exception(
+        get_user_dto_mock):
 
     #Arrange
+    from resource_management.dtos.dtos import UserDto
+    userdto = UserDto(
+        user_id=1,
+        username='Nav',
+        is_admin=False
+    )
+    get_user_dto_mock.return_value = userdto
     user_id = 1
     resource_id = 1
     offset = 0
     limit = 1
 
-    user_storage = create_autospec(UserStorageInterface)
     resource_storage = create_autospec(ResourceStorageInterface)
     item_storage = create_autospec(ItemStorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    user_storage.is_user_admin_or_not.return_value = False
     presenter.unauthorized_user.side_effect = BadRequest
 
     interactor = GetResourceItemsInteractor(
-        user_storage=user_storage,
         resource_storage=resource_storage,
         item_storage=item_storage,
         presenter=presenter
@@ -116,19 +115,26 @@ def test_get_resource_items_when_user_is_not_admin_raise_exception():
         )
 
     #Assert
-    user_storage.is_user_admin_or_not.assert_called_with(user_id=user_id)
     presenter.unauthorized_user.assert_called_once()
 
 
-def test_get_resource_items_with_invalid_resource_id_raise_exception():
+@patch('resource_management_auth.interfaces.service_interface.ServiceInterface.get_user_dto')
+def test_get_resource_items_with_invalid_resource_id_raise_exception(
+        get_user_dto_mock):
 
     #Arrange
+    from resource_management.dtos.dtos import UserDto
+    userdto = UserDto(
+        user_id=1,
+        username='Nav',
+        is_admin=True
+    )
+    get_user_dto_mock.return_value = userdto
     user_id = 1
     resource_id = -1
     offset = 0
     limit = 1
 
-    user_storage = create_autospec(UserStorageInterface)
     resource_storage = create_autospec(ResourceStorageInterface)
     item_storage = create_autospec(ItemStorageInterface)
     presenter = create_autospec(PresenterInterface)
@@ -137,7 +143,6 @@ def test_get_resource_items_with_invalid_resource_id_raise_exception():
     presenter.invalid_resource_id.side_effect = NotFound
 
     interactor = GetResourceItemsInteractor(
-        user_storage=user_storage,
         resource_storage=resource_storage,
         item_storage=item_storage,
         presenter=presenter
@@ -153,16 +158,24 @@ def test_get_resource_items_with_invalid_resource_id_raise_exception():
         )
 
     #Assert
-    user_storage.is_user_admin_or_not.assert_called_with(user_id=user_id)
     resource_storage.is_valid_resource_id.assert_called_with(
         resource_id=resource_id
     )
     presenter.invalid_resource_id.assert_called_once()
 
 
-def test_get_resource_items_with_valid_details(item_dto):
+@patch('resource_management_auth.interfaces.service_interface.ServiceInterface.get_user_dto')
+def test_get_resource_items_with_valid_details(
+        get_user_dto_mock, item_dto):
 
     #Arrange
+    from resource_management.dtos.dtos import UserDto
+    userdto = UserDto(
+        user_id=1,
+        username='Nav',
+        is_admin=True
+    )
+    get_user_dto_mock.return_value = userdto
     user_id = 1
     resource_id = 1
     offset = 0
@@ -180,7 +193,6 @@ def test_get_resource_items_with_valid_details(item_dto):
         }]
     }
 
-    user_storage = create_autospec(UserStorageInterface)
     resource_storage = create_autospec(ResourceStorageInterface)
     item_storage = create_autospec(ItemStorageInterface)
     presenter = create_autospec(PresenterInterface)
@@ -190,7 +202,6 @@ def test_get_resource_items_with_valid_details(item_dto):
     presenter.get_resource_items_response.return_value = expected_items_dict
 
     interactor = GetResourceItemsInteractor(
-        user_storage=user_storage,
         resource_storage=resource_storage,
         item_storage=item_storage,
         presenter=presenter
@@ -205,23 +216,20 @@ def test_get_resource_items_with_valid_details(item_dto):
     )
 
     #Assert
-    user_storage.is_user_admin_or_not.assert_called_with(user_id=user_id)
-    resource_storage.is_valid_resource_id.assert_called_with(
-        resource_id=resource_id
-    )
-    item_storage.get_resource_items.assert_called_with(
-        resource_id=resource_id, offset=offset, limit=limit
-    )
-    presenter.get_resource_items_response.assert_called_with(
-        items_dto_list=items_dto,
-        items_count=items_count
-    )
     assert actual_items_dict == expected_items_dict
 
 
-def test_get_resource_items_when_no_items():
+@patch('resource_management_auth.interfaces.service_interface.ServiceInterface.get_user_dto')
+def test_get_resource_items_when_no_items(get_user_dto_mock):
 
     #Arrange
+    from resource_management.dtos.dtos import UserDto
+    userdto = UserDto(
+        user_id=1,
+        username='Nav',
+        is_admin=True
+    )
+    get_user_dto_mock.return_value = userdto
     user_id = 1
     resource_id = 1
     offset = 0
@@ -230,7 +238,6 @@ def test_get_resource_items_when_no_items():
     items_dto = []
     expected_items_dict = []
 
-    user_storage = create_autospec(UserStorageInterface)
     resource_storage = create_autospec(ResourceStorageInterface)
     item_storage = create_autospec(ItemStorageInterface)
     presenter = create_autospec(PresenterInterface)
@@ -240,7 +247,6 @@ def test_get_resource_items_when_no_items():
     presenter.get_resource_items_response.return_value = expected_items_dict
 
     interactor = GetResourceItemsInteractor(
-        user_storage=user_storage,
         resource_storage=resource_storage,
         item_storage=item_storage,
         presenter=presenter
@@ -254,7 +260,6 @@ def test_get_resource_items_when_no_items():
     )
 
     #Assert
-    user_storage.is_user_admin_or_not.assert_called_with(user_id=user_id)
     resource_storage.is_valid_resource_id.assert_called_with(
         resource_id=resource_id
     )

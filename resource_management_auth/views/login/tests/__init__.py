@@ -7,8 +7,10 @@ URL_SUFFIX = "user/login/v1/"
 
 from .test_case_01 import TestCase01LoginAPITestCase
 from .test_case_02 import TestCase02LoginAPITestCase
+from .test_case_03 import TestCase03LoginAPITestCase
 
 __all__ = [
     "TestCase01LoginAPITestCase",
-    "TestCase02LoginAPITestCase"
+    "TestCase02LoginAPITestCase",
+    "TestCase03LoginAPITestCase"
 ]

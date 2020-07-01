@@ -7,10 +7,10 @@ from resource_management.dtos.dtos import RequestDto
 class RequestStorageImplementation(RequestStorageInterface):
 
     def _get_request_dto(self, request_obj):
+
         request_dto = RequestDto(
             request_id=request_obj.id,
-            username=request_obj.user.username,
-            profile_pic=request_obj.user.profile_pic,
+            user_id=request_obj.user_id,
             resource_name=request_obj.item.resource.resource_name,
             item_name=request_obj.item.title,
             access_level=request_obj.access_level,
@@ -20,7 +20,7 @@ class RequestStorageImplementation(RequestStorageInterface):
 
     def get_admin_requests(self, offset: int, limit: int) -> List[RequestDto]:
         request_objs = Request.objects.select_related(
-                              'item__resource', 'user').all()\
+                              'item__resource').all()\
                               [offset:offset+limit]
         request_dtos_list = []
         for request_obj in request_objs:

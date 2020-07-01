@@ -1,9 +1,7 @@
 import pytest
-from unittest.mock import create_autospec
+from unittest.mock import create_autospec, patch
 from resource_management.interactors.delete_resource_interactor import \
     DeleteResourceInteractor
-from resource_management.interactors.storages.user_storage_interface import \
-    UserStorageInterface
 from resource_management.interactors.storages.resource_storage_interface \
     import ResourceStorageInterface
 from resource_management.interactors.presenters.presenter_interface import \
@@ -11,21 +9,27 @@ from resource_management.interactors.presenters.presenter_interface import \
 from django_swagger_utils.drf_server.exceptions import BadRequest, NotFound
 
 
-def test_delete_resource_when_user_is_not_admin_raise_exception():
+@patch('resource_management_auth.interfaces.service_interface.ServiceInterface.get_user_dto')
+def test_delete_resource_when_user_is_not_admin_raise_exception(
+        get_user_dto_mock):
 
     #Arrange
+    from resource_management.dtos.dtos import UserDto
+    userdto = UserDto(
+        user_id=1,
+        username='Nav',
+        is_admin=False
+    )
+    get_user_dto_mock.return_value = userdto
     user_id = 1
     resource_id = 1
 
-    user_storage = create_autospec(UserStorageInterface)
     resource_storage = create_autospec(ResourceStorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    user_storage.is_user_admin_or_not.return_value = False
     presenter.unauthorized_user.side_effect = BadRequest
 
     interactor = DeleteResourceInteractor(
-        user_storage=user_storage,
         resource_storage=resource_storage,
         presenter=presenter
     )
@@ -38,16 +42,24 @@ def test_delete_resource_when_user_is_not_admin_raise_exception():
         )
 
     #Assert
-    user_storage.is_user_admin_or_not.assert_called_with(user_id=user_id)
     presenter.unauthorized_user.assert_called_once()
 
-def test_update_test_with_invalid_resource_id_raise_exception():
+
+@patch('resource_management_auth.interfaces.service_interface.ServiceInterface.get_user_dto')
+def test_update_test_with_invalid_resource_id_raise_exception(
+        get_user_dto_mock):
 
     #Arrange
+    from resource_management.dtos.dtos import UserDto
+    userdto = UserDto(
+        user_id=1,
+        username='Nav',
+        is_admin=True
+    )
+    get_user_dto_mock.return_value = userdto
     user_id = 1
     resource_id = 1
 
-    user_storage = create_autospec(UserStorageInterface)
     resource_storage = create_autospec(ResourceStorageInterface)
     presenter = create_autospec(PresenterInterface)
 
@@ -55,7 +67,6 @@ def test_update_test_with_invalid_resource_id_raise_exception():
     presenter.invalid_resource_id.side_effect = NotFound
 
     interactor = DeleteResourceInteractor(
-        user_storage=user_storage,
         resource_storage=resource_storage,
         presenter=presenter
     )
@@ -68,25 +79,30 @@ def test_update_test_with_invalid_resource_id_raise_exception():
         )
 
     #Assert
-    user_storage.is_user_admin_or_not.assert_called_with(user_id=user_id)
     resource_storage.is_valid_resource_id.assert_called_with(
         resource_id=resource_id
     )
     presenter.invalid_resource_id.assert_called_once()
 
 
-def test_delete_resource_with_valid_details():
+@patch('resource_management_auth.interfaces.service_interface.ServiceInterface.get_user_dto')
+def test_delete_resource_with_valid_details(get_user_dto_mock):
 
     #Arrange
+    from resource_management.dtos.dtos import UserDto
+    userdto = UserDto(
+        user_id=1,
+        username='Nav',
+        is_admin=True
+    )
+    get_user_dto_mock.return_value = userdto
     user_id = 1
     resource_id = 1
 
-    user_storage = create_autospec(UserStorageInterface)
     resource_storage = create_autospec(ResourceStorageInterface)
     presenter = create_autospec(PresenterInterface)
 
     interactor = DeleteResourceInteractor(
-        user_storage=user_storage,
         resource_storage=resource_storage,
         presenter=presenter
     )
@@ -98,7 +114,6 @@ def test_delete_resource_with_valid_details():
     )
 
     #Assert
-    user_storage.is_user_admin_or_not.assert_called_with(user_id=user_id)
     resource_storage.is_valid_resource_id.assert_called_with(
         resource_id=resource_id
     )

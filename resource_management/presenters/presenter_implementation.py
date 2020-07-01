@@ -152,7 +152,6 @@ class PresenterImplementation(PresenterInterface):
         request_dict = {
             'request_id': request_dto.request_id,
             'username': request_dto.username,
-            'profile_pic': request_dto.profile_pic,
             'resource_name': request_dto.resource_name,
             'item_name': request_dto.item_name,
             'access_level': request_dto.access_level,

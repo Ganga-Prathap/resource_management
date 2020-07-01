@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import create_autospec
+from unittest.mock import create_autospec, patch
 from resource_management.interactors.get_item_users_interactor import \
     GetItemUsersInteractor
 from resource_management.interactors.storages.user_storage_interface import \
@@ -40,6 +40,7 @@ def test_get_item_users_when_user_is_not_admin_raise_exception():
     #Assert
     user_storage.is_user_admin_or_not.assert_called_with(user_id=user_id)
     presenter.unauthorized_user.assert_called_once()
+
 
 def test_get_item_users_with_invalid_item_id_raise_exception():
 

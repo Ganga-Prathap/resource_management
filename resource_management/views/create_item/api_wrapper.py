@@ -4,8 +4,6 @@ from django_swagger_utils.drf_server.utils.decorator.interface_decorator \
 from raven.utils import json
 from resource_management.interactors.create_item_interactor import \
     CreateItemInteractor
-from resource_management.storages.user_storage_implementation import \
-    UserStorageImplementation
 from resource_management.storages.resource_storage_implementation import \
     ResourceStorageImplementation
 from resource_management.storages.item_storage_implementation import \
@@ -26,13 +24,11 @@ def api_wrapper(*args, **kwargs):
     description = requested_data['description']
     link = requested_data['link']
 
-    user_storage = UserStorageImplementation()
     resource_storage = ResourceStorageImplementation()
     item_storage = ItemStorageImplementation()
     presenter = PresenterImplementation()
 
     interactor = CreateItemInteractor(
-        user_storage=user_storage,
         resource_storage=resource_storage,
         item_storage=item_storage,
         presenter=presenter
@@ -46,5 +42,5 @@ def api_wrapper(*args, **kwargs):
         link=link
     )
     data = json.dumps({"response": "created successfully"})
-    response = HttpResponse(data, status=200)
+    response = HttpResponse(data, status=201)
     return response

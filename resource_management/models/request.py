@@ -7,7 +7,7 @@ from resource_management.constants.enums import (
 
 class Request(models.Model):
 
-    user = models.IntegerField()
+    user_id = models.IntegerField()
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
     access_level = models.CharField(

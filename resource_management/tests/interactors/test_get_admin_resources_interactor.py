@@ -1,9 +1,7 @@
 import pytest
-from unittest.mock import create_autospec
+from unittest.mock import create_autospec, patch
 from resource_management.interactors.get_admin_resources_interactor import \
     GetAdminResourcesInteractor
-from resource_management.interactors.storages.user_storage_interface import \
-    UserStorageInterface
 from resource_management.interactors.storages.resource_storage_interface \
     import ResourceStorageInterface
 from resource_management.interactors.presenters.presenter_interface import \
@@ -18,14 +16,12 @@ def test_get_admin_resources_when_offset_value_is_invalid_raise_exception():
     offset = -1
     limit = 1
 
-    user_storage = create_autospec(UserStorageInterface)
     resource_storage = create_autospec(ResourceStorageInterface)
     presenter = create_autospec(PresenterInterface)
 
     presenter.invalidOffsetValue.side_effect = BadRequest
 
     interactor = GetAdminResourcesInteractor(
-        user_storage=user_storage,
         resource_storage=resource_storage,
         presenter=presenter
     )
@@ -48,14 +44,12 @@ def test_get_admin_resources_when_limit_value_is_invalid_raise_exception():
     offset = 0
     limit = -1
 
-    user_storage = create_autospec(UserStorageInterface)
     resource_storage = create_autospec(ResourceStorageInterface)
     presenter = create_autospec(PresenterInterface)
 
     presenter.invalidLimitValue.side_effect = BadRequest
 
     interactor = GetAdminResourcesInteractor(
-        user_storage=user_storage,
         resource_storage=resource_storage,
         presenter=presenter
     )
@@ -71,22 +65,29 @@ def test_get_admin_resources_when_limit_value_is_invalid_raise_exception():
     #Assert
     presenter.invalidLimitValue.assert_called_once()
 
-def test_get_admin_resources_when_user_is_not_admin_raise_exception():
+
+@patch('resource_management_auth.interfaces.service_interface.ServiceInterface.get_user_dto')
+def test_get_admin_resources_when_user_is_not_admin_raise_exception(
+        get_user_dto_mock):
 
     #Arrange
+    from resource_management.dtos.dtos import UserDto
+    userdto = UserDto(
+        user_id=1,
+        username='Nav',
+        is_admin=False
+    )
+    get_user_dto_mock.return_value = userdto
     user_id = 1
     offset = 0
     limit = 1
 
-    user_storage = create_autospec(UserStorageInterface)
     resource_storage = create_autospec(ResourceStorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    user_storage.is_user_admin_or_not.return_value = False
     presenter.unauthorized_user.side_effect = BadRequest
 
     interactor = GetAdminResourcesInteractor(
-        user_storage=user_storage,
         resource_storage=resource_storage,
         presenter=presenter
     )
@@ -100,13 +101,23 @@ def test_get_admin_resources_when_user_is_not_admin_raise_exception():
         )
 
     #Assert
-    user_storage.is_user_admin_or_not.assert_called_with(user_id=user_id)
     presenter.unauthorized_user.assert_called_once()
 
 
-def test_get_admin_resources_when_user_is_admin(admin_resources_dto):
+@patch('resource_management_auth.interfaces.service_interface.ServiceInterface.get_user_dto')
+def test_get_admin_resources_when_user_is_admin(
+        get_user_dto_mock, admin_resources_dto):
 
     #Arrange
+    print("1: ")
+    from resource_management.dtos.dtos import UserDto
+    userdto = UserDto(
+        user_id=1,
+        username='Nav',
+        is_admin=True
+    )
+    get_user_dto_mock.return_value = userdto
+    print(get_user_dto_mock)
     user_id = 1
     offset = 0
     limit = 1
@@ -122,7 +133,6 @@ def test_get_admin_resources_when_user_is_admin(admin_resources_dto):
         }]
     }
 
-    user_storage = create_autospec(UserStorageInterface)
     resource_storage = create_autospec(ResourceStorageInterface)
     presenter = create_autospec(PresenterInterface)
 
@@ -132,7 +142,6 @@ def test_get_admin_resources_when_user_is_admin(admin_resources_dto):
         expected_resources_dict
 
     interactor = GetAdminResourcesInteractor(
-        user_storage=user_storage,
         resource_storage=resource_storage,
         presenter=presenter
     )
@@ -145,7 +154,6 @@ def test_get_admin_resources_when_user_is_admin(admin_resources_dto):
     )
 
     #Assert
-    user_storage.is_user_admin_or_not.assert_called_with(user_id=user_id)
     resource_storage.get_admin_resources.assert_called_with(
         offset=offset,
         limit=limit

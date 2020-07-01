@@ -5,10 +5,9 @@ from resource_management.dtos.dtos import ItemDto
 
 
 @pytest.mark.django_db
-def test_get_user_items(user_dto,
-                        create_resource,
+def test_get_user_items(create_resource,
                         create_item,
-                        item_to_user):
+                        create_useritems):
 
     #Arrange
     user_id = 1

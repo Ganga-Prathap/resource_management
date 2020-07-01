@@ -1,5 +1,6 @@
 import pytest
 import datetime
+from unittest.mock import patch
 from resource_management.storages.request_storage_implementation import \
     RequestStorageImplementation
 from resource_management.constants.enums import AccessLevelEnum
@@ -7,7 +8,7 @@ from resource_management.dtos.dtos import RequestDto
 
 
 @pytest.mark.django_db
-def test_get_user_requests(user_dto, create_resource,
+def test_get_user_requests(get_user_dto_mock, create_resource,
                            create_item, create_request):
 
     #Arrange
@@ -17,7 +18,6 @@ def test_get_user_requests(user_dto, create_resource,
         RequestDto(
             request_id=1,
             username='Prathap',
-            profile_pic='https://prathap.profile',
             resource_name='github',
             item_name='item1',
             access_level=AccessLevelEnum.READ.value,

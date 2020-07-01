@@ -2,8 +2,9 @@ from typing import List
 from resource_management.interactors.storages.item_storage_interface import \
     ItemStorageInterface
 from resource_management.models.resource import Resource
-from resource_management.models.item import Item
-from resource_management.models.user import User
+from resource_management.models.item import Item, UserItems
+
+
 from resource_management.dtos.dtos import ItemDto
 
 
@@ -80,6 +81,7 @@ class ItemStorageImplementation(ItemStorageInterface):
 
         Item.objects.filter(id__in=item_ids).delete()
 
+    """
     def get_user_items(self, user_id: int,
                        offset: int, limit: int) -> List[ItemDto]:
 
@@ -98,4 +100,29 @@ class ItemStorageImplementation(ItemStorageInterface):
     def get_user_items_count(self, user_id: int) -> int:
         user_obj = User.objects.get(id=user_id)
         items_count = user_obj.item_set.all().count()
+        return items_count
+    """
+
+    
+
+    def get_user_items(self, user_id: int,
+                       offset: int, limit: int) -> List[ItemDto]:
+
+        item_ids = UserItems.objects.filter(
+            user_id=user_id).values_list('item_id', flat=True)[offset:offset+limit]
+
+        item_objs = Item.objects.filter(id__in=item_ids)
+
+        items_dto_list = []
+
+        for item_obj in item_objs:
+            resource_name = item_obj.resource.resource_name
+            item_dto = self._get_item_dto(item_obj, resource_name)
+            items_dto_list.append(item_dto)
+
+        return items_dto_list
+
+    def get_user_items_count(self, user_id: int) -> int:
+        items_count = UserItems.objects.filter(
+            user_id=user_id).count()
         return items_count
