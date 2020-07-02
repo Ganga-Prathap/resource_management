@@ -60,7 +60,7 @@ def admin_request_dto():
     request_dto = [
         RequestDto(
             request_id=1,
-            username='Prathap',
+            user_id=2,
             resource_name='resource1',
             item_name='item1',
             access_level=AccessLevelEnum.READ.value,

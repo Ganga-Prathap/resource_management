@@ -14,30 +14,6 @@ from common.oauth2_storage import OAuth2SQLStorage
 class ServiceInterface:
 
     @staticmethod
-    def user_login(username: str, password: str):
-        storage = StorageImplementation()
-        oauth2_storage = OAuth2SQLStorage()
-        presenter = PresenterImplementation()
-        interactor = LoginInteractor(
-            storage=storage,
-            oauth2_storage=oauth2_storage,
-            presenter=presenter
-        )
-        interactor.login(username=username, password=password)
-
-    @staticmethod
-    def user_signup(username: str, password: str):
-        storage = StorageImplementation()
-        oauth2_storage = OAuth2SQLStorage()
-        presenter = PresenterImplementation()
-        interactor = SignupInteractor(
-            storage=storage,
-            oauth2_storage=oauth2_storage,
-            presenter=presenter
-        )
-        interactor.signup(username=username, password=password)
-
-    @staticmethod
     def get_user_dto(user_id: int):
         storage = StorageImplementation()
         presenter = PresenterImplementation()

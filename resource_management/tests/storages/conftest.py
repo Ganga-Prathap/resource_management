@@ -67,7 +67,7 @@ def create_useritems():
 @freeze_time("2020-06-01")
 def create_request():
     Request.objects.create(
-        user_id=1,
+        user_id=2,
         item_id=1,
         access_level=AccessLevelEnum.READ.value,
         due_date_time=datetime.datetime(2020, 6, 1, 0, 0),

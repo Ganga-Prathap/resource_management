@@ -1,6 +1,6 @@
 import pytest
 import datetime
-from unittest.mock import create_autospec
+from unittest.mock import create_autospec, patch
 from resource_management.interactors.get_admin_requests_interactor import \
     GetAdminRequestsInteractor
 from resource_management.interactors.storages.request_storage_interface \
@@ -68,8 +68,18 @@ def test_get_admin_requests_when_limit_value_is_invalid_raise_exception():
     presenter.invalidLimitValue.assert_called_once()
 
 
-def test_get_admin_requests_when_user_is_not_admin_raise_exception():
+@patch('resource_management_auth.interfaces.service_interface.ServiceInterface.get_user_dto')
+def test_get_admin_requests_when_user_is_not_admin_raise_exception(
+        get_user_dto_mock):
 
+    #Arrange
+    from resource_management.dtos.dtos import UserDto
+    userdto = UserDto(
+        user_id=1,
+        username='Nav',
+        is_admin=False
+    )
+    get_user_dto_mock.return_value = userdto
     user_id = 1
     offset = 0
     limit = 1
@@ -96,9 +106,23 @@ def test_get_admin_requests_when_user_is_not_admin_raise_exception():
     presenter.unauthorized_user.assert_called_once()
 
 
-def test_get_admin_requests_with_valid_details(admin_request_dto):
+@patch('resource_management_auth.interfaces.service_interface.ServiceInterface.get_user_dto')
+def test_get_admin_requests_with_valid_details(
+        get_user_dto_mock, admin_request_dto):
 
     #Arrange
+    from resource_management.dtos.dtos import UserDto
+    userdto1 = UserDto(
+        user_id=1,
+        username='Nav',
+        is_admin=False
+    )
+    userdto2 = UserDto(
+        user_id=2,
+        username='Prathap',
+        is_admin=False
+    )
+    get_user_dto_mock.side_effect = [userdto1, userdto2]
     user_id = 1
     offset = 0
     limit = 1
@@ -141,10 +165,4 @@ def test_get_admin_requests_with_valid_details(admin_request_dto):
     )
 
     #Assert
-    request_storage.get_admin_requests.assert_called_with(
-        offset=offset, limit=limit
-    )
-    presenter.get_admin_requests_response.assert_called_with(
-        requests_dto=request_dto_list, total_requests=total_count
-    )
     assert actual_requested_dict == expected_request_dict

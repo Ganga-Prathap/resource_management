@@ -49,8 +49,7 @@ def request_dto():
     request_dto = [
         RequestDto(
             request_id=1,
-            username='Prathap',
-            profile_pic='https://prathap.profile',
+            user_id=2,
             resource_name='github',
             item_name='item1',
             access_level=AccessLevelEnum.READ.value,

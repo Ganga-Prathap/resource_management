@@ -148,10 +148,10 @@ class PresenterImplementation(PresenterInterface):
         return users_dict_list
 
     @staticmethod
-    def _get_request_dict(request_dto):
+    def _get_request_dict(request_dto, user_dto):
         request_dict = {
             'request_id': request_dto.request_id,
-            'username': request_dto.username,
+            'username': user_dto.username,
             'resource_name': request_dto.resource_name,
             'item_name': request_dto.item_name,
             'access_level': request_dto.access_level,
@@ -160,11 +160,14 @@ class PresenterImplementation(PresenterInterface):
         return request_dict
 
     def get_admin_requests_response(self, requests_dto: List[RequestDto],
-                                   total_requests: int):
+                                   total_requests: int,
+                                   users_dto: List[UserDto]):
         request_dict_list = []
         for request_dto in requests_dto:
-            request_dict = self._get_request_dict(request_dto)
-            request_dict_list.append(request_dict)
+            for user_dto in users_dto:
+                if request_dto.user_id == user_dto.user_id:
+                    request_dict = self._get_request_dict(request_dto, user_dto)
+                    request_dict_list.append(request_dict)
         requests = {
             'total_requests': total_requests,
             'requests': request_dict_list

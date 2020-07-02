@@ -8,18 +8,6 @@ class AuthService:
             ServiceInterface
         return ServiceInterface()
 
-    def user_login(self, username: str, password: str):
-        return self.interface.user_login(
-            username=username,
-            password=password
-        )
-
-    def user_signup(self, username: str, password: str):
-        return self.interface.user_signup(
-            username=username,
-            password=password
-        )
-
     def get_user_details(self, user_id: int):
         user_dto = self.interface.get_user_dto(user_id=user_id)
         return UserDto(

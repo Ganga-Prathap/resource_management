@@ -39,7 +39,7 @@ class ItemDto:
 @dataclass
 class RequestDto:
     request_id: int
-    username: str
+    user_id: int
     resource_name: str
     item_name: str
     access_level: AccessLevelEnum

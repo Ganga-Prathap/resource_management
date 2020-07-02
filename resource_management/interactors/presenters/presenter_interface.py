@@ -42,7 +42,6 @@ class PresenterInterface:
 
     @abstractmethod
     def unauthorized_user(self):
-        print("143:\n")
         pass
 
     @abstractmethod
@@ -90,7 +89,8 @@ class PresenterInterface:
 
     @abstractmethod
     def get_admin_requests_response(self, requests_dto: List[RequestDto],
-                                   total_requests: int):
+                                   total_requests: int,
+                                   users_dto: List[UserDto]):
         pass
 
     @abstractmethod

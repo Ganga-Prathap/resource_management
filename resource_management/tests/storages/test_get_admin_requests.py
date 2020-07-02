@@ -8,7 +8,7 @@ from resource_management.dtos.dtos import RequestDto
 
 
 @pytest.mark.django_db
-def test_get_user_requests(get_user_dto_mock, create_resource,
+def test_get_user_requests(create_resource,
                            create_item, create_request):
 
     #Arrange
@@ -17,7 +17,7 @@ def test_get_user_requests(get_user_dto_mock, create_resource,
     expected_request_dto = [
         RequestDto(
             request_id=1,
-            username='Prathap',
+            user_id=2,
             resource_name='github',
             item_name='item1',
             access_level=AccessLevelEnum.READ.value,
