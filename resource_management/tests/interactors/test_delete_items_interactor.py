@@ -1,9 +1,7 @@
 import pytest
-from unittest.mock import create_autospec
+from unittest.mock import create_autospec, patch
 from resource_management.interactors.delete_items_interactor import \
     DeleteItemsInteractor
-from resource_management.interactors.storages.user_storage_interface import \
-    UserStorageInterface
 from resource_management.interactors.storages.item_storage_interface import \
     ItemStorageInterface
 from resource_management.interactors.presenters.presenter_interface import \
@@ -14,21 +12,27 @@ from django_swagger_utils.drf_server.exceptions import (
 )
 
 
-def test_delete_items_when_user_is_not_admin_raise_exception():
+@patch('resource_management_auth.interfaces.service_interface.ServiceInterface.get_user_dto')
+def test_delete_items_when_user_is_not_admin_raise_exception(
+        get_user_dto_mock):
 
     #Arrange
+    from resource_management.dtos.dtos import UserDto
+    userdto = UserDto(
+        user_id=1,
+        username='Nav',
+        is_admin=False
+    )
+    get_user_dto_mock.return_value = userdto
     user_id = 1
     item_ids = [1]
 
-    user_storage = create_autospec(UserStorageInterface)
     item_storage = create_autospec(ItemStorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    user_storage.is_user_admin_or_not.return_value = False
     presenter.unauthorized_user.side_effect = BadRequest
 
     interactor = DeleteItemsInteractor(
-        user_storage=user_storage,
         item_storage=item_storage,
         presenter=presenter
     )
@@ -41,18 +45,24 @@ def test_delete_items_when_user_is_not_admin_raise_exception():
         )
 
     #Assert
-    user_storage.is_user_admin_or_not.assert_called_with(user_id=user_id)
     presenter.unauthorized_user.assert_called_once()
 
 
-def test_delete_items_with_invalid_item_ids_raise_exception():
+@patch('resource_management_auth.interfaces.service_interface.ServiceInterface.get_user_dto')
+def test_delete_items_with_invalid_item_ids_raise_exception(get_user_dto_mock):
 
     #Arrange
+    from resource_management.dtos.dtos import UserDto
+    userdto = UserDto(
+        user_id=1,
+        username='Nav',
+        is_admin=False
+    )
+    get_user_dto_mock.return_value = userdto
     user_id = 1
     item_id = -1
     item_ids = [-1]
 
-    user_storage = create_autospec(UserStorageInterface)
     item_storage = create_autospec(ItemStorageInterface)
     presenter = create_autospec(PresenterInterface)
 
@@ -60,7 +70,6 @@ def test_delete_items_with_invalid_item_ids_raise_exception():
     presenter.invalid_item_id.side_effect = NotFound
 
     interactor = DeleteItemsInteractor(
-        user_storage=user_storage,
         item_storage=item_storage,
         presenter=presenter
     )
@@ -73,25 +82,30 @@ def test_delete_items_with_invalid_item_ids_raise_exception():
         )
 
     #Assert
-    user_storage.is_user_admin_or_not.assert_called_with(user_id=user_id)
     item_storage.is_valid_item_id.assert_called_with(item_id=item_id)
     presenter.invalid_item_id.assert_called_once()
 
 
-def test_delete_items_with_valid_details():
+@patch('resource_management_auth.interfaces.service_interface.ServiceInterface.get_user_dto')
+def test_delete_items_with_valid_details(get_user_dto_mock):
 
     #Arrange
+    from resource_management.dtos.dtos import UserDto
+    userdto = UserDto(
+        user_id=1,
+        username='Nav',
+        is_admin=False
+    )
+    get_user_dto_mock.return_value = userdto
     user_id = 1
     item_id = 1
     item_ids = [1]
 
-    user_storage = create_autospec(UserStorageInterface)
     item_storage = create_autospec(ItemStorageInterface)
     presenter = create_autospec(PresenterInterface)
 
 
     interactor = DeleteItemsInteractor(
-        user_storage=user_storage,
         item_storage=item_storage,
         presenter=presenter
     )
@@ -103,7 +117,6 @@ def test_delete_items_with_valid_details():
     )
 
     #Assert
-    user_storage.is_user_admin_or_not.assert_called_with(user_id=user_id)
     item_storage.is_valid_item_id.assert_called_with(item_id=item_id)
     item_storage.delete_items.assert_called_with(
         item_ids=item_ids

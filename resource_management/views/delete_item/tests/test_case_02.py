@@ -29,7 +29,7 @@ TEST_CASE = {
 }
 
 
-class TestCase01DeleteItemAPITestCase(CustomAPITestCase):
+class TestCase02DeleteItemAPITestCase(CustomAPITestCase):
     app_name = APP_NAME
     operation_name = OPERATION_NAME
     request_method = REQUEST_METHOD
@@ -37,11 +37,11 @@ class TestCase01DeleteItemAPITestCase(CustomAPITestCase):
     test_case_dict = TEST_CASE
 
     def setupUser(self, username, password):
-        super(TestCase01DeleteItemAPITestCase, self).setupUser(
+        super(TestCase02DeleteItemAPITestCase, self).setupUser(
             username=username, password=password
         )
         resource = ResourceFactory.create()
-        ItemFactory.create(resource=resource)
+        #ItemFactory.create(resource=resource)
 
     @patch('resource_management_auth.interfaces.service_interface.ServiceInterface.get_user_dto')
     def test_case(self, get_user_dto_mock):

@@ -1,9 +1,11 @@
 """
 # TODO: Update test case description
 """
-
+from unittest.mock import patch
 from django_swagger_utils.utils.test import CustomAPITestCase
 from . import APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX
+from resource_management.factories.factories import ResourceFactory
+
 
 REQUEST_BODY = """
 
@@ -12,9 +14,9 @@ REQUEST_BODY = """
 TEST_CASE = {
     "request": {
         "path_params": {},
-        "query_params": {},
+        "query_params": {"offset": 0, "limit": 2},
         "header_params": {},
-        "securities": {"oauth": {"tokenUrl": "http://auth.ibtspl.com/oauth2/", "flow": "password", "scopes": ["superuser"], "type": "oauth2"}},
+        "securities": {"oauth": {"tokenUrl": "http://auth.ibtspl.com/oauth2/", "flow": "password", "scopes": ["read", "write"], "type": "oauth2"}},
         "body": REQUEST_BODY,
     },
 }
@@ -27,7 +29,19 @@ class TestCase01GetAdminResourcesAPITestCase(CustomAPITestCase):
     url_suffix = URL_SUFFIX
     test_case_dict = TEST_CASE
 
-    def test_case(self):
-        self.default_test_case() # Returns response object.
-        # Which can be used for further response object checks.
-        # Add database state checks here.
+    def setupUser(self, username, password):
+        super(TestCase01GetAdminResourcesAPITestCase, self).setupUser(
+            username=username, password=password
+        )
+        ResourceFactory.create_batch(2)
+
+    @patch('resource_management_auth.interfaces.service_interface.ServiceInterface.get_user_dto')
+    def test_case(self, get_user_dto_mock):
+        from resource_management.dtos.dtos import UserDto
+        userdto = UserDto(
+            user_id=1,
+            username='Nav',
+            is_admin=True
+        )
+        get_user_dto_mock.return_value = userdto
+        self.default_test_case()
